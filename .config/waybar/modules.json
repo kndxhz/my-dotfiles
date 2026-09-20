@@ -104,6 +104,7 @@
         "on-click-middle": "playerctl previous",
         "tooltip": true,
         "signal": 5,
+        "exec-on-event": true,
         "justify": "center"  // GTK label justification
     },
   // waybar-lyric (orig + translation)
