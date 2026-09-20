@@ -357,16 +357,16 @@
     },
     "modules": [
       "custom/secondary",
-      "custom/updates",
       "disk",
       "cpu",
       "memory",
       "custom/cpu-temp",
-      "custom/bluetooth-manager",
+      "custom/updates",
       "custom/cliphist",
-      "custom/hypridle",
       "custom/hyprshade",
-      "custom/tlp-profile"
+      "custom/tlp-profile",
+      "custom/hypridle",
+      "custom/bluetooth-manager"
     ]
   },
   // Group Links
