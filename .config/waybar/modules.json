@@ -72,12 +72,11 @@
     "on-scroll-up": "true",
     "on-scroll-down": "true"
   },
-  // Fcitx input method status
-  "custom/input-method": {
-    "exec": "sh -c 'case $(fcitx5-remote) in 2) echo 中;; *) echo EN;; esac'",
-    "interval": 1,
-    "on-click": "fcitx5-remote -t",
-    "tooltip-format": "Click to switch input method"
+  // Bluetooth manager
+  "custom/bluetooth-manager": {
+    "format": "",
+    "on-click": "blueman-manager",
+    "tooltip-format": "Open Bluetooth manager"
   },
 
   // Now Playing
@@ -363,7 +362,7 @@
       "cpu",
       "memory",
       "custom/cpu-temp",
-      "bluetooth",
+      "custom/bluetooth-manager",
       "custom/cliphist",
       "custom/hypridle",
       "custom/hyprshade",

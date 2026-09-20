@@ -31,11 +31,9 @@
     "modules-right": [
         "tray",
         "group/secondary",
-        "battery",
-        "network",
-        "custom/input-method",
         "custom/notification",
         "custom/exit",
+        "battery",
         "clock"
     ]
 }
