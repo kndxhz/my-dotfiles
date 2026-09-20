@@ -2,28 +2,50 @@
 
 set -eu
 
-sum=0
-count=0
+cpu_ids=()
+cpu_freqs=()
+cpu_limits=()
 max_freq=0
-for freq_file in /sys/devices/system/cpu/cpu[0-9]*/cpufreq/scaling_cur_freq; do
+
+for cpu_dir in $(printf '%s\n' /sys/devices/system/cpu/cpu[0-9]* | sort -V); do
+    freq_file="$cpu_dir/cpufreq/scaling_cur_freq"
     [ -r "$freq_file" ] || continue
+    cpu_id=${cpu_dir##*cpu}
     freq=$(cat "$freq_file")
-    sum=$((sum + freq))
-    count=$((count + 1))
-    max_file=${freq_file%scaling_cur_freq}cpuinfo_max_freq
-    [ -r "$max_file" ] || max_file=${freq_file%scaling_cur_freq}scaling_max_freq
-    if [ -r "$max_file" ]; then
-        limit=$(cat "$max_file")
-        [ "$limit" -gt "$max_freq" ] && max_freq="$limit"
-    fi
+    max_file="$cpu_dir/cpufreq/cpuinfo_max_freq"
+    [ -r "$max_file" ] || max_file="$cpu_dir/cpufreq/scaling_max_freq"
+    limit=$(cat "$max_file" 2>/dev/null || printf '0')
+
+    cpu_ids+=("$cpu_id")
+    cpu_freqs+=("$freq")
+    cpu_limits+=("$limit")
+    [ "$limit" -gt "$max_freq" ] && max_freq="$limit"
 done
 
-if [ "$count" -gt 0 ]; then
-    average=$((sum / count / 1000))
+if [ "${#cpu_freqs[@]}" -gt 0 ]; then
+    total_sum=0
+    big_sum=0
+    big_count=0
+    tooltip=""
+    for index in "${!cpu_freqs[@]}"; do
+        freq=${cpu_freqs[$index]}
+        limit=${cpu_limits[$index]}
+        cpu_id=${cpu_ids[$index]}
+        freq_mhz=$((freq / 1000))
+        total_sum=$((total_sum + freq))
+        [ "$limit" -eq "$max_freq" ] && big_sum=$((big_sum + freq)) && big_count=$((big_count + 1))
+        [ -n "$tooltip" ] && tooltip="${tooltip}\\n"
+        tooltip="${tooltip}Core ${cpu_id}: ${freq_mhz}MHz"
+    done
+
+    total_average=$((total_sum / ${#cpu_freqs[@]} / 1000))
+    big_average=$((big_sum / big_count / 1000))
     maximum=$((max_freq / 1000))
-    average_ghz=$(awk "BEGIN { printf \"%.1f\", $average / 1000 }")
+    big_average_ghz=$(awk "BEGIN { printf \"%.1f\", $big_average / 1000 }")
     maximum_ghz=$(awk "BEGIN { printf \"%.1f\", $maximum / 1000 }")
-    printf '{"text":"%s/%sGHz","tooltip":"Average CPU frequency: %s MHz\\nMaximum CPU frequency: %s MHz"}\n' "$average_ghz" "$maximum_ghz" "$average" "$maximum"
+    total_average_ghz=$(awk "BEGIN { printf \"%.1f\", $total_average / 1000 }")
+    tooltip="Big-core average: ${big_average}MHz\\nAll-core average: ${total_average}MHz\\nMaximum: ${maximum}MHz\\n${tooltip}"
+    printf '{"text":" / P %s/%sGHz","tooltip":"%s"}\n' "$big_average_ghz" "$maximum_ghz" "$tooltip"
 else
     printf '%s\n' '{"text":"/ --","tooltip":"CPU frequency unavailable"}'
 fi

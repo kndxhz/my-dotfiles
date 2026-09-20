@@ -295,7 +295,7 @@
   },
   // Memory
   "memory": {
-    "format": "MEM {}%",
+    "format": " / MEM {}%",
     "on-click": "~/.config/ml4w/settings/system-monitor.sh",
     "on-scroll-up": "true",
     "on-scroll-down": "true"
@@ -303,7 +303,7 @@
   // Harddisc space used
   "disk": {
     "interval": 2,
-    "format": "DISK {percentage_used}%",
+    "format": " / DISK {percentage_used}%",
     "path": "/",
     "on-click": "~/.config/ml4w/settings/system-monitor.sh",
     "on-scroll-up": "true",

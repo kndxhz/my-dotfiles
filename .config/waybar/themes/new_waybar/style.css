@@ -422,10 +422,6 @@ window#waybar.empty #window {
     color: @icon_color;
 }
 
-#cpu,#memory,#disk,#custom-cpu-temp,#custom-cpu-frequency {
-    margin-right:10px;
-}
-
 #group-secondary {
     margin-right:20px;
 }
