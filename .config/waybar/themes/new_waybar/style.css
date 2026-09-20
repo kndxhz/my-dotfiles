@@ -423,7 +423,8 @@ window#waybar.empty #window {
 }
 
 #group-secondary {
-    margin-right:20px;
+    margin-right:32px;
+    padding-right:10px;
 }
 
 #custom-cpu-temp.warning {

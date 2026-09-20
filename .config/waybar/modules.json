@@ -102,7 +102,7 @@
         "on-click-right": "playerctl next",
         "on-click-middle": "playerctl previous",
         "tooltip": true,
-        "justify": "center"  // GTK label justification
+        "justify": "left"  // GTK label justification
     },
   // waybar-lyric (orig + translation)
   "custom/waybar-lyric-orig": {
@@ -288,14 +288,14 @@
   },
   // CPU
   "cpu": {
-    "format": "CPU {usage}%",
+    "format": "C {usage}%",
     "on-click": "~/.config/ml4w/settings/system-monitor.sh",
     "on-scroll-up": "true",
     "on-scroll-down": "true"
   },
   // Memory
   "memory": {
-    "format": " / MEM {}%",
+    "format": " / M {}%",
     "on-click": "~/.config/ml4w/settings/system-monitor.sh",
     "on-scroll-up": "true",
     "on-scroll-down": "true"
@@ -303,7 +303,7 @@
   // Harddisc space used
   "disk": {
     "interval": 2,
-    "format": " / DISK {percentage_used}%",
+    "format": " / D {percentage_used}%",
     "path": "/",
     "on-click": "~/.config/ml4w/settings/system-monitor.sh",
     "on-scroll-up": "true",

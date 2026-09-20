@@ -45,7 +45,7 @@ if [ "${#cpu_freqs[@]}" -gt 0 ]; then
     maximum_ghz=$(awk "BEGIN { printf \"%.1f\", $maximum / 1000 }")
     total_average_ghz=$(awk "BEGIN { printf \"%.1f\", $total_average / 1000 }")
     tooltip="Big-core average: ${big_average}MHz\\nAll-core average: ${total_average}MHz\\nMaximum: ${maximum}MHz\\n${tooltip}"
-    printf '{"text":" / P %s/%sGHz","tooltip":"%s"}\n' "$big_average_ghz" "$maximum_ghz" "$tooltip"
+    printf '{"text":" / F %s/%sG","tooltip":"%s"}\n' "$big_average_ghz" "$maximum_ghz" "$tooltip"
 else
     printf '%s\n' '{"text":"/ --","tooltip":"CPU frequency unavailable"}'
 fi

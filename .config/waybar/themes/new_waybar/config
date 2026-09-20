@@ -16,6 +16,7 @@
     "modules-left": [
         "custom/appmenu",
         "hyprland/workspaces",
+        "custom/lyrics",
         //"wlr/taskbar",
         //"group/quicklinks",
         //"custom/nowplaying",        
@@ -23,7 +24,6 @@
     ],
     // Modules Center
     "modules-center": [
-        "custom/lyrics",
         "hyprland/window",
         "custom/empty"
     ],
