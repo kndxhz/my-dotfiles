@@ -95,14 +95,14 @@
 
     // Waybar Lyrics
     "custom/lyrics": {
-        "exec": "~/.local/bin/waybar-mpris-lyrics 2> /dev/null",
+        "exec": "~/.config/ml4w/scripts/waybar-lyrics-responsive 2> /dev/null",
         "return-type": "json",
         "format": "{}",
         "on-click": "playerctl play-pause",
         "on-click-right": "playerctl next",
         "on-click-middle": "playerctl previous",
         "tooltip": true,
-        "justify": "left"  // GTK label justification
+        "justify": "center"  // GTK label justification
     },
   // waybar-lyric (orig + translation)
   "custom/waybar-lyric-orig": {

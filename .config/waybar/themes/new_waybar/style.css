@@ -427,6 +427,10 @@ window#waybar.empty #window {
     padding-right:10px;
 }
 
+#disk {
+    margin-right:24px;
+}
+
 #custom-cpu-temp.warning {
     color: @tertiary;
 }

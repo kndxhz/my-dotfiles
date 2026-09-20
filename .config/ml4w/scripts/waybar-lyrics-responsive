@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -eu
+
+width=$(hyprctl monitors -j 2>/dev/null | jq -r '[.[] | select(.focused)][0].width // 0')
+if [ "$width" -lt 1280 ]; then
+    printf '%s\n' '{"text":"","class":"hidden"}'
+    exit 0
+fi
+
+exec "$HOME/.local/bin/waybar-mpris-lyrics"
