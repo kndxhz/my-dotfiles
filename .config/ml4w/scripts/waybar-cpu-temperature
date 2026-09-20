@@ -5,8 +5,7 @@ set -eu
 for hwmon in /sys/class/hwmon/hwmon*; do
     [ "$(cat "$hwmon/name" 2>/dev/null || true)" = "coretemp" ] || continue
 
-    tooltip=""
-    display_temp=""
+    core_temps=()
     for temp_file in "$hwmon"/temp*_input; do
         [ -r "$temp_file" ] || continue
         sensor_id=${temp_file##*temp}
@@ -14,13 +13,26 @@ for hwmon in /sys/class/hwmon/hwmon*; do
         label=$(cat "$hwmon/temp${sensor_id}_label" 2>/dev/null || printf 'Sensor %s' "$sensor_id")
         temp=$(( $(cat "$temp_file") / 1000 ))
 
-        [ "$label" = "Package id 0" ] && display_temp="$temp"
-        [ -n "$tooltip" ] && tooltip="${tooltip}\\n"
-        tooltip="${tooltip}${label}: ${temp}C"
+        case "$label" in
+            Core*) core_temps+=("$temp") ;;
+        esac
     done
 
-    [ -n "$tooltip" ] || continue
-    [ -n "$display_temp" ] || display_temp=0
+    [ "${#core_temps[@]}" -gt 0 ] || continue
+    sum=0
+    display_temp=0
+    tooltip=""
+    core_index=0
+    for temp in "${core_temps[@]}"; do
+        sum=$((sum + temp))
+        [ "$temp" -gt "$display_temp" ] && display_temp="$temp"
+        [ -n "$tooltip" ] && tooltip="${tooltip}\\n"
+        tooltip="${tooltip}Core ${core_index}: ${temp}C"
+        core_index=$((core_index + 1))
+    done
+    average=$((sum / ${#core_temps[@]}))
+    tooltip="Average: ${average}C\\n${tooltip}"
+
     class="normal"
     [ "$display_temp" -ge 85 ] && class="critical"
     [ "$display_temp" -ge 75 ] && [ "$display_temp" -lt 85 ] && class="warning"
