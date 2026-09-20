@@ -315,6 +315,18 @@
     "interval": 2,
     "on-click": "btop"
   },
+  "custom/cpu-frequency": {
+    "exec": "~/.config/ml4w/scripts/waybar-cpu-frequency",
+    "return-type": "json",
+    "interval": 2,
+    "on-click": "btop"
+  },
+  "custom/gpu-usage": {
+    "exec": "~/.config/ml4w/scripts/waybar-gpu-usage",
+    "return-type": "json",
+    "interval": 2,
+    "on-click": "btop"
+  },
   // Group Hardware
   "group/hardware": {
     "orientation": "inherit",
@@ -357,10 +369,12 @@
     },
     "modules": [
       "custom/secondary",
-      "disk",
       "cpu",
-      "memory",
+      "custom/cpu-frequency",
       "custom/cpu-temp",
+      "custom/gpu-usage",
+      "memory",
+      "disk",
       "custom/updates",
       "custom/cliphist",
       "custom/hyprshade",

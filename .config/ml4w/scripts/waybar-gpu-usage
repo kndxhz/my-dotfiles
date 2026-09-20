@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -eu
+
+for busy_file in /sys/class/drm/card*/device/gt_busy_percent; do
+    [ -r "$busy_file" ] || continue
+    usage=$(cat "$busy_file")
+    printf '{"text":"GPU %s%%","tooltip":"GPU usage: %s%%"}\n' "$usage" "$usage"
+    exit 0
+done
+
+if command -v intel_gpu_top >/dev/null 2>&1; then
+    printf '%s\n' '{"text":"GPU --","tooltip":"GPU usage is available through intel_gpu_top"}'
+else
+    printf '%s\n' '{"text":"GPU --","tooltip":"Install intel-gpu-tools for GPU usage"}'
+fi
