@@ -69,6 +69,7 @@
   "custom/secondary": {
     "format": "",
     "tooltip-format": "More",
+    "on-click": "~/.config/ml4w/scripts/toggle-waybar-secondary",
     "on-scroll-up": "true",
     "on-scroll-down": "true"
   },
@@ -102,6 +103,7 @@
         "on-click-right": "playerctl next",
         "on-click-middle": "playerctl previous",
         "tooltip": true,
+        "signal": 5,
         "justify": "center"  // GTK label justification
     },
   // waybar-lyric (orig + translation)
