@@ -414,7 +414,7 @@ window#waybar.empty #window {
  * Hardware Group
  * ----------------------------------------------------- */
 
-#disk,#memory,#cpu,#custom-cpu-temp,#custom-cpu-frequency,#custom-gpu-usage {
+#disk,#memory,#cpu,#custom-cpu-temp,#custom-cpu-frequency {
     margin: 0px;
     padding: 0px;
     font-size: 16px;
@@ -422,8 +422,12 @@ window#waybar.empty #window {
     color: @icon_color;
 }
 
-#custom-cpu-temp,#custom-cpu-frequency,#custom-gpu-usage {
+#cpu,#memory,#disk,#custom-cpu-temp,#custom-cpu-frequency {
     margin-right:10px;
+}
+
+#group-secondary {
+    margin-right:20px;
 }
 
 #custom-cpu-temp.warning {

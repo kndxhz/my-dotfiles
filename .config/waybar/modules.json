@@ -321,12 +321,6 @@
     "interval": 2,
     "on-click": "btop"
   },
-  "custom/gpu-usage": {
-    "exec": "~/.config/ml4w/scripts/waybar-gpu-usage",
-    "return-type": "json",
-    "interval": 2,
-    "on-click": "btop"
-  },
   // Group Hardware
   "group/hardware": {
     "orientation": "inherit",
@@ -372,7 +366,6 @@
       "cpu",
       "custom/cpu-frequency",
       "custom/cpu-temp",
-      "custom/gpu-usage",
       "memory",
       "disk",
       "custom/updates",
