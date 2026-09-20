@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+res_h=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .height')
+scale=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .scale')
+scale_percent=$(awk -v value="$scale" 'BEGIN { printf "%.0f", value * 100 }')
+w_margin=$((res_h * 27 / scale_percent))
+wlogout -b 5 -T "$w_margin" -B "$w_margin"

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -eu
+
+for hwmon in /sys/class/hwmon/hwmon*; do
+    [ "$(cat "$hwmon/name" 2>/dev/null || true)" = "coretemp" ] || continue
+
+    tooltip=""
+    display_temp=""
+    for temp_file in "$hwmon"/temp*_input; do
+        [ -r "$temp_file" ] || continue
+        sensor_id=${temp_file##*temp}
+        sensor_id=${sensor_id%_input}
+        label=$(cat "$hwmon/temp${sensor_id}_label" 2>/dev/null || printf 'Sensor %s' "$sensor_id")
+        temp=$(( $(cat "$temp_file") / 1000 ))
+
+        [ "$label" = "Package id 0" ] && display_temp="$temp"
+        [ -n "$tooltip" ] && tooltip="${tooltip}\\n"
+        tooltip="${tooltip}${label}: ${temp}C"
+    done
+
+    [ -n "$tooltip" ] || continue
+    [ -n "$display_temp" ] || display_temp=0
+    class="normal"
+    [ "$display_temp" -ge 85 ] && class="critical"
+    [ "$display_temp" -ge 75 ] && [ "$display_temp" -lt 85 ] && class="warning"
+    printf '{"text":"/ CPU %sC","class":"%s","tooltip":"%s"}\n' "$display_temp" "$class" "$tooltip"
+    exit 0
+done
+
+printf '%s\n' '{"text":"/ CPU --","class":"unknown","tooltip":"CPU temperature sensor unavailable"}'

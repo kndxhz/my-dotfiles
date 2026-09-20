@@ -1,0 +1,21 @@
+/* -----------------------------------------------------
+ * Import Matugen Colors
+ * ----------------------------------------------------- */
+@import '../../../../../.config/waybar/colors.css';
+
+@define-color icon_color #FFFFFF;
+@define-color border_color @secondary;
+@define-color background rgba(225, 228, 218, 0.04);
+
+@import '../style.css';
+
+#custom-lyrics {
+    background-color: transparent;
+    color: @icon_color;
+    padding: 0 10px;
+    margin: 0 5px;
+    font-size: 11px;
+    font-weight: bold;
+    /* GTK CSS uses different properties for label alignment sometimes, but text-align is standard GTK */
+    /* However, for Waybar modules which are often GtkLabel inside a box, we might need to rely on the module config or specific GTK properties */
+}
