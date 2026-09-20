@@ -36,7 +36,7 @@ for hwmon in /sys/class/hwmon/hwmon*; do
     class="normal"
     [ "$display_temp" -ge 85 ] && class="critical"
     [ "$display_temp" -ge 75 ] && [ "$display_temp" -lt 85 ] && class="warning"
-    printf '{"text":"/ CPU %sC","class":"%s","tooltip":"%s"}\n' "$display_temp" "$class" "$tooltip"
+    printf '{"text":"CPU %sC","class":"%s","tooltip":"%s"}\n' "$display_temp" "$class" "$tooltip"
     exit 0
 done
 

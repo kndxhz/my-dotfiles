@@ -288,14 +288,14 @@
   },
   // CPU
   "cpu": {
-    "format": "/ C {usage}% ",
+    "format": "CPU {usage}%",
     "on-click": "~/.config/ml4w/settings/system-monitor.sh",
     "on-scroll-up": "true",
     "on-scroll-down": "true"
   },
   // Memory
   "memory": {
-    "format": "/ M {}% ",
+    "format": "MEM {}%",
     "on-click": "~/.config/ml4w/settings/system-monitor.sh",
     "on-scroll-up": "true",
     "on-scroll-down": "true"
@@ -303,7 +303,7 @@
   // Harddisc space used
   "disk": {
     "interval": 2,
-    "format": "D {percentage_used}% ",
+    "format": "DISK {percentage_used}%",
     "path": "/",
     "on-click": "~/.config/ml4w/settings/system-monitor.sh",
     "on-scroll-up": "true",

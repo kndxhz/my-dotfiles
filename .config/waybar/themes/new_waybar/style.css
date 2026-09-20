@@ -175,8 +175,6 @@ window#waybar.empty #window {
 #custom-system,
 #custom-hyprshade,
 #custom-hypridle,
-#custom-cpu-frequency,
-#custom-gpu-usage,
 #custom-tools,
 #custom-secondary,
 #custom-bluetooth-manager,
@@ -416,14 +414,15 @@ window#waybar.empty #window {
  * Hardware Group
  * ----------------------------------------------------- */
 
-#disk,#memory,#cpu,#custom-cpu-temp {
+#disk,#memory,#cpu,#custom-cpu-temp,#custom-cpu-frequency,#custom-gpu-usage {
     margin: 0px;
     padding: 0px;
     font-size: 16px;
+    font-weight: normal;
     color: @icon_color;
 }
 
-#custom-cpu-temp {
+#custom-cpu-temp,#custom-cpu-frequency,#custom-gpu-usage {
     margin-right:10px;
 }
 

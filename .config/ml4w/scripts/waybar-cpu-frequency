@@ -21,7 +21,9 @@ done
 if [ "$count" -gt 0 ]; then
     average=$((sum / count / 1000))
     maximum=$((max_freq / 1000))
-    printf '{"text":"/ %s/%sMHz","tooltip":"Average CPU frequency: %s MHz\\nMaximum CPU frequency: %s MHz"}\n' "$average" "$maximum" "$average" "$maximum"
+    average_ghz=$(awk "BEGIN { printf \"%.1f\", $average / 1000 }")
+    maximum_ghz=$(awk "BEGIN { printf \"%.1f\", $maximum / 1000 }")
+    printf '{"text":"%s/%sGHz","tooltip":"Average CPU frequency: %s MHz\\nMaximum CPU frequency: %s MHz"}\n' "$average_ghz" "$maximum_ghz" "$average" "$maximum"
 else
     printf '%s\n' '{"text":"/ --","tooltip":"CPU frequency unavailable"}'
 fi
