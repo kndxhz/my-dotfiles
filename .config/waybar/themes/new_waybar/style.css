@@ -498,24 +498,20 @@ window#waybar.empty #window {
  * ----------------------------------------------------- */
 
 #pulseaudio {
-    background-color: @background;
-    font-size: 16px;
-    color: @on_surface;
-    border-radius: 8px;
-    padding: 2px 10px 0px 10px;
-    margin: 3px 10px 3px 0px;
-    border: 2px solid @border_color;
-    transition: all 0.3s ease-out;
+    background-color: transparent;
+    font-size: 18px;
+    color: @icon_color;
+    padding: 0 8px;
+    margin: 0;
+    border: none;
 }
 
 #pulseaudio:hover {
-    color: @on_surface;
-    background: @primary_container;
-    border-color: @primary;
+    color: @primary;
+    background-color: transparent;
 }
 
 #pulseaudio.muted {
-    background-color: @background;
     color: @on_surface_variant;
 }
 

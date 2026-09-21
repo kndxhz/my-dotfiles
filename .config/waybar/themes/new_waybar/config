@@ -34,6 +34,7 @@
         "custom/notification",
         "custom/exit",
         "battery",
+        "pulseaudio",
         "clock"
     ]
 }
