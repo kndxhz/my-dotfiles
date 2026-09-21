@@ -69,7 +69,6 @@
   "custom/secondary": {
     "format": "",
     "tooltip-format": "More",
-    "on-click": "~/.config/ml4w/scripts/toggle-waybar-secondary",
     "on-scroll-up": "true",
     "on-scroll-down": "true"
   },
@@ -96,15 +95,13 @@
 
     // Waybar Lyrics
     "custom/lyrics": {
-        "exec": "~/.config/ml4w/scripts/waybar-lyrics-responsive 2> /dev/null",
+        "exec": "~/.local/bin/waybar-mpris-lyrics 2> /dev/null",
         "return-type": "json",
         "format": "{}",
         "on-click": "playerctl play-pause",
         "on-click-right": "playerctl next",
         "on-click-middle": "playerctl previous",
         "tooltip": true,
-        "signal": 5,
-        "exec-on-event": true,
         "justify": "center"  // GTK label justification
     },
   // waybar-lyric (orig + translation)
