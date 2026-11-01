@@ -1,0 +1,6 @@
+require("./hyprland_options")
+require("./monitors")
+require("./hyprland_rules")
+require("./hyprland_gestures")
+require("./hyprland_keybindings")
+require("./hyprland_startup")
