@@ -101,7 +101,13 @@ fi
 
 # Check if waybar-disabled file exists
 if [ ! -f $HOME/.config/ml4w/settings/waybar-disabled ]; then
-    HYPRLAND_SIGNATURE=$(hyprctl instances -j | jq -r '.[0].instance')
+    WAYLAND_SOCKET="${WAYLAND_DISPLAY#unix:}"
+    WAYLAND_SOCKET="${WAYLAND_SOCKET##*/}"
+    HYPRLAND_SIGNATURE=$(hyprctl instances -j | jq -r --arg socket "$WAYLAND_SOCKET" 'map(select(.wl_socket == $socket)) | last | .instance // empty')
+    if [ -z "$HYPRLAND_SIGNATURE" ]; then
+        echo "Could not find a Hyprland instance for Wayland socket '$WAYLAND_SOCKET'." >&2
+        exit 1
+    fi
     HYPRLAND_INSTANCE_SIGNATURE="$HYPRLAND_SIGNATURE" waybar -c ~/.config/waybar/themes${arrThemes[0]}/$config_file -s ~/.config/waybar/themes${arrThemes[1]}/$style_file &
     # env GTK_DEBUG=interactive waybar -c ~/.config/waybar/themes${arrThemes[0]}/$config_file -s ~/.config/waybar/themes${arrThemes[1]}/$style_file &
 else

@@ -5,8 +5,8 @@ set -euo pipefail
 trackpoint_node="/sys/devices/platform/i8042/serio1/drvctl"
 state_file="${XDG_RUNTIME_DIR:-/tmp}/trackpoint-disabled"
 
-if [[ ! -w "$trackpoint_node" ]]; then
-    notify-send "TrackPoint" "No writable TrackPoint control found"
+if [[ ! -e "$trackpoint_node" ]]; then
+    notify-send "TrackPoint" "TrackPoint control not found"
     exit 1
 fi
 
