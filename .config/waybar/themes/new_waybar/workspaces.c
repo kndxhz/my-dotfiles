@@ -108,7 +108,11 @@ static void render(Workspaces *self, const char *line) {
         set_class(button, "active", id == active);
         set_class(button, "occupied", windows > 0);
         set_class(button, "empty", windows == 0);
-        char *tooltip = g_strdup_printf("工作区 %d · %d 个窗口", id, windows);
+        gboolean urgent = json_object_has_member(item, "urgent") &&
+                          json_object_get_boolean_member(item, "urgent") && id != active;
+        set_class(button, "urgent", urgent);
+        char *tooltip = g_strdup_printf("工作区 %d · %d 个窗口%s", id, windows,
+                                       urgent ? " · 有新提醒" : "");
         gtk_widget_set_tooltip_text(button, tooltip);
         g_free(tooltip);
     }

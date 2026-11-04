@@ -8,6 +8,9 @@ import sys
 import time
 
 previous = None
+pending_attention = set()
+known_titles = {}
+BROWSER_CLASSES = ("chrome", "chromium", "firefox", "brave", "vivaldi", "microsoft-edge", "zen-browser")
 
 
 def query(command):
@@ -26,12 +29,46 @@ def visible_workspaces(workspaces, active=None):
             for i in sorted(ids)]
 
 
-def update():
+def attention_workspaces(clients, active, event="", payload=""):
+    # IPC addresses omit the 0x prefix used in the clients response.
+    by_address = {c["address"].removeprefix("0x"): c for c in clients}
+    pending_attention.intersection_update(by_address)
+    address = payload.partition(",")[0].removeprefix("0x")
+    client = by_address.get(address)
+    if client is not None:
+        # Use the event payload: a clients snapshot may already contain a
+        # later title while older events are still queued.
+        title = payload.partition(",")[2] if event == "windowtitlev2" else client.get("title", "")
+        browser = any(name in client.get("class", "").lower() for name in BROWSER_CLASSES)
+        changed_title = (event == "windowtitlev2" and browser
+                         and address in known_titles and title != known_titles[address])
+        if event in {"urgent", "bell"} or changed_title or (event == "openwindow" and browser):
+            pending_attention.add(address)
+        if event == "windowtitlev2":
+            known_titles[address] = title
+    # Visiting a workspace acknowledges all its pending notifications.
+    for address, client in by_address.items():
+        if client.get("workspace", {}).get("id") == active:
+            pending_attention.discard(address)
+    for stale in known_titles.keys() - by_address.keys():
+        del known_titles[stale]
+    # Other IPC events must not overwrite the last processed title.
+    for address, client in by_address.items():
+        known_titles.setdefault(address, client.get("title", ""))
+    return {by_address[address].get("workspace", {}).get("id")
+            for address in pending_attention}
+
+
+def update(event="", payload=""):
     global previous
     active = query("activeworkspace").get("id")
+    attention = attention_workspaces(query("clients"), active, event, payload)
+    workspaces = visible_workspaces(query("workspaces"), active)
+    for workspace in workspaces:
+        workspace["urgent"] = workspace["id"] in attention
     result = json.dumps({
         "active": active,
-        "workspaces": visible_workspaces(query("workspaces"), active),
+        "workspaces": workspaces,
     }, ensure_ascii=False)
     if result != previous:
         print(result, flush=True)
@@ -41,7 +78,8 @@ def update():
 events = {"workspace", "workspacev2", "focusedmon", "focusedmonv2",
           "createworkspace", "destroyworkspace", "openwindow",
           "closewindow", "movewindow", "movewindowv2",
-          "moveworkspace", "renameworkspace", "configreloaded"}
+          "moveworkspace", "renameworkspace", "configreloaded",
+          "urgent", "bell", "windowtitlev2", "activewindowv2"}
 
 def main():
     while True:
@@ -53,8 +91,9 @@ def main():
                 update()
                 with connection.makefile() as stream:
                     for line in stream:
-                        if line.partition(">>")[0] in events:
-                            update()
+                        event, _, payload = line.rstrip("\n").partition(">>")
+                        if event in events:
+                            update(event, payload)
         except BrokenPipeError:
             break
         except (OSError, ValueError, subprocess.SubprocessError) as error:
