@@ -16,9 +16,12 @@ def query(command):
     ))
 
 
-def visible_workspaces(workspaces):
+def visible_workspaces(workspaces, active=None):
     by_id = {w["id"]: w for w in workspaces if w["id"] > 0}
     ids = set(range(1, 6)) | {i for i, w in by_id.items() if w.get("windows", 0) > 0}
+    # Keep an empty extra workspace visible until the user leaves it.
+    if active is not None and active > 0:
+        ids.add(active)
     return [{"id": i, "windows": by_id.get(i, {}).get("windows", 0)}
             for i in sorted(ids)]
 
@@ -28,7 +31,7 @@ def update():
     active = query("activeworkspace").get("id")
     result = json.dumps({
         "active": active,
-        "workspaces": visible_workspaces(query("workspaces")),
+        "workspaces": visible_workspaces(query("workspaces"), active),
     }, ensure_ascii=False)
     if result != previous:
         print(result, flush=True)

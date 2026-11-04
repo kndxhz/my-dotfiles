@@ -22,7 +22,7 @@
         //"custom/nowplaying",        
         "custom/empty"
     ],
-    // Keep 1-5 visible; show higher workspace IDs only while occupied.
+    // Keep 1-5 visible; show higher workspace IDs while occupied or active.
     "cffi/workspaces": {
         "module_path": "/home/kndxhz/.config/waybar/themes/new_waybar/workspaces.so",
         "scroll-cooldown-ms": 300
