@@ -21,6 +21,7 @@ typedef struct {
     gint64 last_event;
     guint cooldown_ms;
     double accumulated;
+    int active_workspace;
 } Workspaces;
 
 static void focus(const char *target) {
@@ -38,6 +39,30 @@ static void focus(const char *target) {
 static void clicked(GtkButton *button, gpointer unused) {
     (void)unused;
     focus(gtk_button_get_label(button));
+}
+
+static int adjacent_workspace(Workspaces *self, int direction) {
+    int target = 0;
+    gboolean current_occupied = FALSE;
+    if (self->active_workspace <= 0) return 0;
+    GList *children = gtk_container_get_children(GTK_CONTAINER(self->box));
+    for (GList *it = children; it; it = it->next) {
+        int id = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(it->data), "workspace-id"));
+        gboolean occupied = gtk_style_context_has_class(
+            gtk_widget_get_style_context(GTK_WIDGET(it->data)), "occupied");
+        if (id == self->active_workspace) current_occupied = occupied;
+        /* Fixed empty slots are display placeholders, not swipe destinations. */
+        if (!occupied) continue;
+        if (direction > 0 && id > self->active_workspace && (!target || id < target))
+            target = id;
+        if (direction < 0 && id < self->active_workspace && (!target || id > target))
+            target = id;
+    }
+    g_list_free(children);
+    /* Like native swipes: one empty workspace after the last occupied one. */
+    if (!target && direction > 0 && current_occupied && self->active_workspace < G_MAXINT)
+        target = self->active_workspace + 1;
+    return target;
 }
 
 static gboolean scrolled(GtkWidget *widget, GdkEventScroll *event, gpointer data) {
@@ -59,7 +84,12 @@ static gboolean scrolled(GtkWidget *widget, GdkEventScroll *event, gpointer data
     if (direction) {
         self->last_scroll = now;
         self->accumulated = 0;
-        focus(direction > 0 ? "e+1" : "e-1");
+        int target = adjacent_workspace(self, direction);
+        if (target) {
+            char *name = g_strdup_printf("%d", target);
+            focus(name);
+            g_free(name);
+        }
     }
     return TRUE;
 }
@@ -78,6 +108,7 @@ static void render(Workspaces *self, const char *line) {
     }
     JsonObject *root = json_node_get_object(json_parser_get_root(parser));
     int active = json_object_get_int_member(root, "active");
+    self->active_workspace = active;
     JsonArray *items = json_object_get_array_member(root, "workspaces");
     GList *children = gtk_container_get_children(GTK_CONTAINER(self->box));
     for (GList *it = children; it; it = it->next)

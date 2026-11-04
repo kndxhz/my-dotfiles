@@ -4,7 +4,8 @@ local scripts = (os.getenv("HOME") or "") .. "/.config/hypr/scripts"
 hl.config({
     gestures = {
         workspace_swipe_use_r = false,
-        workspace_swipe_create_new = false,
+        workspace_swipe_create_new = true,
+        workspace_swipe_forever = false,
     },
 })
 
