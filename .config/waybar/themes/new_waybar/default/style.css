@@ -43,6 +43,28 @@ window#waybar #workspaces button:hover {
     border-bottom-color: @primary;
 }
 
+@keyframes workspace-attention {
+    0% {
+        background-color: @background;
+        color: @on_surface;
+        border-bottom-color: @primary;
+    }
+    50% {
+        background-color: alpha(@primary, 0.55);
+        color: @on_surface;
+        border-bottom-color: @on_surface;
+    }
+    100% {
+        background-color: @background;
+        color: @on_surface;
+        border-bottom-color: @primary;
+    }
+}
+
+window#waybar #workspaces button.urgent:not(.active) {
+    animation: workspace-attention 1.2s ease-in-out infinite;
+}
+
 #custom-lyrics {
     background-color: transparent;
     color: @icon_color;
