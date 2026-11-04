@@ -99,6 +99,11 @@ if [ -f ~/.config/waybar/themes${arrThemes[1]}/style-custom.css ]; then
     style_file="style-custom.css"
 fi
 
+# Build the local dynamic workspace module when this theme is selected.
+if [[ "${arrThemes[0]}" == "/new_waybar" ]]; then
+    bash "$HOME/.config/waybar/themes/new_waybar/build-workspaces.sh" || exit 1
+fi
+
 # Check if waybar-disabled file exists
 if [ ! -f $HOME/.config/ml4w/settings/waybar-disabled ]; then
     WAYLAND_SOCKET="${WAYLAND_DISPLAY#unix:}"
