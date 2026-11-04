@@ -15,68 +15,17 @@
     // Modules Left
     "modules-left": [
         "custom/appmenu",
-        "group/workspace-buttons",
+        "cffi/workspaces",
         "custom/lyrics",
         //"wlr/taskbar",
         //"group/quicklinks",
         //"custom/nowplaying",        
         "custom/empty"
     ],
-    // Display empty slots without creating persistent compositor workspaces.
-    "group/workspace-buttons": {
-        "orientation": "horizontal",
-        "modules": [
-            "custom/workspace1",
-            "custom/workspace2",
-            "custom/workspace3",
-            "custom/workspace4",
-            "custom/workspace5"
-        ]
-    },
-    "custom/workspace1": {
-        "exec": "python3 ~/.config/waybar/themes/new_waybar/workspace-status.py 1",
-        "return-type": "json",
-        "restart-interval": 1,
-        "exec-on-event": false,
-        "on-click": "hyprctl dispatch 'hl.dsp.focus({workspace = \"1\"})'",
-        "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e-1\"})'",
-        "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e+1\"})'"
-    },
-    "custom/workspace2": {
-        "exec": "python3 ~/.config/waybar/themes/new_waybar/workspace-status.py 2",
-        "return-type": "json",
-        "restart-interval": 1,
-        "exec-on-event": false,
-        "on-click": "hyprctl dispatch 'hl.dsp.focus({workspace = \"2\"})'",
-        "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e-1\"})'",
-        "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e+1\"})'"
-    },
-    "custom/workspace3": {
-        "exec": "python3 ~/.config/waybar/themes/new_waybar/workspace-status.py 3",
-        "return-type": "json",
-        "restart-interval": 1,
-        "exec-on-event": false,
-        "on-click": "hyprctl dispatch 'hl.dsp.focus({workspace = \"3\"})'",
-        "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e-1\"})'",
-        "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e+1\"})'"
-    },
-    "custom/workspace4": {
-        "exec": "python3 ~/.config/waybar/themes/new_waybar/workspace-status.py 4",
-        "return-type": "json",
-        "restart-interval": 1,
-        "exec-on-event": false,
-        "on-click": "hyprctl dispatch 'hl.dsp.focus({workspace = \"4\"})'",
-        "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e-1\"})'",
-        "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e+1\"})'"
-    },
-    "custom/workspace5": {
-        "exec": "python3 ~/.config/waybar/themes/new_waybar/workspace-status.py 5",
-        "return-type": "json",
-        "restart-interval": 1,
-        "exec-on-event": false,
-        "on-click": "hyprctl dispatch 'hl.dsp.focus({workspace = \"5\"})'",
-        "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e-1\"})'",
-        "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e+1\"})'"
+    // Keep 1-5 visible; show higher workspace IDs only while occupied.
+    "cffi/workspaces": {
+        "module_path": "/home/kndxhz/.config/waybar/themes/new_waybar/workspaces.so",
+        "scroll-cooldown-ms": 300
     },
     // Modules Center
     "modules-center": [

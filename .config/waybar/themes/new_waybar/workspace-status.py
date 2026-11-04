@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Display a workspace without making empty workspaces persistent."""
+"""Stream workspace buttons without keeping empty workspaces alive."""
 import json
 import os
 import socket
@@ -7,7 +7,6 @@ import subprocess
 import sys
 import time
 
-workspace_id = int(sys.argv[1])
 previous = None
 
 
@@ -17,17 +16,19 @@ def query(command):
     ))
 
 
+def visible_workspaces(workspaces):
+    by_id = {w["id"]: w for w in workspaces if w["id"] > 0}
+    ids = set(range(1, 6)) | {i for i, w in by_id.items() if w.get("windows", 0) > 0}
+    return [{"id": i, "windows": by_id.get(i, {}).get("windows", 0)}
+            for i in sorted(ids)]
+
+
 def update():
     global previous
     active = query("activeworkspace").get("id")
-    workspace = next((w for w in query("workspaces")
-                      if w.get("id") == workspace_id), {})
-    windows = workspace.get("windows", 0)
-    state = "active" if active == workspace_id else ("occupied" if windows else "empty")
     result = json.dumps({
-        "text": str(workspace_id),
-        "class": state,
-        "tooltip": f"工作区 {workspace_id} · {windows} 个窗口",
+        "active": active,
+        "workspaces": visible_workspaces(query("workspaces")),
     }, ensure_ascii=False)
     if result != previous:
         print(result, flush=True)
@@ -39,19 +40,24 @@ events = {"workspace", "workspacev2", "focusedmon", "focusedmonv2",
           "closewindow", "movewindow", "movewindowv2",
           "moveworkspace", "renameworkspace", "configreloaded"}
 
-while True:
-    try:
-        path = os.path.join(os.environ["XDG_RUNTIME_DIR"], "hypr",
-                            os.environ["HYPRLAND_INSTANCE_SIGNATURE"], ".socket2.sock")
-        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as connection:
-            connection.connect(path)
-            update()
-            with connection.makefile() as stream:
-                for line in stream:
-                    if line.partition(">>")[0] in events:
-                        update()
-    except BrokenPipeError:
-        break
-    except (OSError, ValueError, subprocess.SubprocessError) as error:
-        print(f"workspace-status: {error}", file=sys.stderr)
-    time.sleep(1)
+def main():
+    while True:
+        try:
+            path = os.path.join(os.environ["XDG_RUNTIME_DIR"], "hypr",
+                                os.environ["HYPRLAND_INSTANCE_SIGNATURE"], ".socket2.sock")
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as connection:
+                connection.connect(path)
+                update()
+                with connection.makefile() as stream:
+                    for line in stream:
+                        if line.partition(">>")[0] in events:
+                            update()
+        except BrokenPipeError:
+            break
+        except (OSError, ValueError, subprocess.SubprocessError) as error:
+            print(f"workspace-status: {error}", file=sys.stderr)
+        time.sleep(1)
+
+
+if __name__ == "__main__":
+    main()
