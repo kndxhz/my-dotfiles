@@ -35,6 +35,7 @@
     // Modules Right    
     "modules-right": [
         "tray",
+        "group/performance",
         "group/secondary",
         "custom/notification",
         "custom/exit",

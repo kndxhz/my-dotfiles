@@ -353,6 +353,23 @@
       "custom/tlp-profile"
     ]
   },
+  // Performance metrics drawer
+  "group/performance": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 300,
+      "children-class": "not-performance",
+      "transition-left-to-right": false
+    },
+    "modules": [
+      "custom/system",
+      "cpu",
+      "custom/cpu-frequency",
+      "custom/cpu-temp",
+      "memory",
+      "disk"
+    ]
+  },
   // Secondary modules drawer
   "group/secondary": {
     "orientation": "inherit",
@@ -363,17 +380,11 @@
     },
     "modules": [
       "custom/secondary",
-      "cpu",
-      "custom/cpu-frequency",
-      "custom/cpu-temp",
-      "memory",
-      "disk",
       "custom/updates",
       "custom/cliphist",
       "custom/hyprshade",
       "custom/tlp-profile",
-      "custom/hypridle",
-      "custom/bluetooth-manager"
+      "custom/hypridle"
     ]
   },
   // Group Links
