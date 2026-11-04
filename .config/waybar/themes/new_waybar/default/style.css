@@ -9,6 +9,36 @@
 
 @import '../style.css';
 
+#workspace-buttons {
+    margin: 0px 7px 0px 0px;
+    min-width: 210px;
+}
+
+#custom-workspace1, #custom-workspace2, #custom-workspace3,
+#custom-workspace4, #custom-workspace5 {
+    padding: 0px 6px;
+    margin: 3px;
+    min-width: 22px;
+    color: @on_surface;
+    background-color: @background;
+    border-bottom: 2px solid alpha(@on_surface, 0.25);
+    transition: all 0.3s ease-in-out;
+}
+
+#custom-workspace1.active, #custom-workspace2.active, #custom-workspace3.active,
+#custom-workspace4.active, #custom-workspace5.active {
+    color: @on_primary;
+    background-color: @primary;
+    border-bottom-color: @primary;
+    min-width: 30px;
+}
+
+#custom-workspace1:hover, #custom-workspace2:hover, #custom-workspace3:hover,
+#custom-workspace4:hover, #custom-workspace5:hover {
+    background-color: @primary_container;
+    border-bottom-color: @primary;
+}
+
 #custom-lyrics {
     background-color: transparent;
     color: @icon_color;
