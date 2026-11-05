@@ -670,3 +670,26 @@ tooltip, tooltip * {
     border-radius: 0px;
     border-bottom-color: @error;
 }
+
+/* At ten actual workspaces, each five buttons form a second-level drawer. */
+#workspaces.grouped {
+    min-width: 0px;
+}
+
+#workspaces .workspace-group {
+    margin-right: 5px;
+}
+
+#workspaces button.workspace-group-header {
+    padding: 0px 8px;
+}
+
+window#waybar #workspaces button.workspace-group-header:checked {
+    border-bottom-color: @primary;
+}
+
+window#waybar #workspaces .workspace-group-content {
+    border-left: 1px solid alpha(@on_surface, 0.25);
+    margin-left: 2px;
+    padding-left: 2px;
+}

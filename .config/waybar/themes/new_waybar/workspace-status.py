@@ -63,11 +63,14 @@ def update(event="", payload=""):
     global previous
     active = query("activeworkspace").get("id")
     attention = attention_workspaces(query("clients"), active, event, payload)
-    workspaces = visible_workspaces(query("workspaces"), active)
+    existing = query("workspaces")
+    workspaces = visible_workspaces(existing, active)
     for workspace in workspaces:
         workspace["urgent"] = workspace["id"] in attention
     result = json.dumps({
         "active": active,
+        # Fixed 1-5 buttons are placeholders, not additional workspaces.
+        "workspace-count": sum(w["id"] > 0 for w in existing),
         "workspaces": workspaces,
     }, ensure_ascii=False)
     if result != previous:
