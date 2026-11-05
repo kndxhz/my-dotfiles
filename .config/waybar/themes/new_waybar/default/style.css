@@ -27,6 +27,12 @@ window#waybar #workspaces button {
     transition: all 0.3s ease-in-out;
 }
 
+/* Avoid inherited GTK text shadows behind workspace digits. */
+window#waybar #workspaces button,
+window#waybar #workspaces button label {
+    text-shadow: none;
+}
+
 /* Uniform translucent black overlay, excluding group headers. */
 window#waybar #workspaces button:not(.workspace-group-header) {
     background-image: none;
