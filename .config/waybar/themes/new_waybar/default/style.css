@@ -24,7 +24,8 @@ window#waybar #workspaces button {
     background-image: none;
     background-color: @background;
     border-bottom: 2px solid alpha(@on_surface, 0.25);
-    transition: all 0.3s ease-in-out;
+    /* Workspace activation must not animate the width of the media region. */
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-bottom-color 0.3s ease-in-out;
 }
 
 /* Avoid inherited GTK text shadows behind workspace digits. */

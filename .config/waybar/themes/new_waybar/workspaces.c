@@ -107,6 +107,40 @@ static void set_class(GtkWidget *widget, const char *name, gboolean enabled) {
     else gtk_style_context_remove_class(style, name);
 }
 
+/* Reserve normal widths plus ONE active-button expansion. The membership
+ * key deliberately excludes active/urgent state, so focus changes reuse it. */
+static void reserve_workspace_width(GtkWidget *box) {
+    GList *children = gtk_container_get_children(GTK_CONTAINER(box));
+    GString *key = g_string_new(NULL);
+    for (GList *it = children; it; it = it->next) {
+        if (!GTK_IS_BUTTON(it->data)) continue;
+        g_string_append_printf(key, "%s;", gtk_button_get_label(GTK_BUTTON(it->data)));
+    }
+    const char *previous = g_object_get_data(G_OBJECT(box), "width-membership");
+    if (g_strcmp0(previous, key->str) != 0) {
+        gint total = 0, expansion = 0, count = 0;
+        for (GList *it = children; it; it = it->next) {
+            GtkWidget *button = it->data;
+            if (!GTK_IS_BUTTON(button)) continue;
+            gboolean active = gtk_style_context_has_class(gtk_widget_get_style_context(button), "active");
+            gint minimum, normal, enlarged;
+            set_class(button, "active", FALSE);
+            gtk_widget_get_preferred_width(button, &minimum, &normal);
+            set_class(button, "active", TRUE);
+            gtk_widget_get_preferred_width(button, &minimum, &enlarged);
+            set_class(button, "active", active);
+            total += normal;
+            expansion = MAX(expansion, enlarged - normal);
+            count++;
+        }
+        total += expansion + MAX(0, count - 1) * gtk_box_get_spacing(GTK_BOX(box));
+        gtk_widget_set_size_request(box, total, -1);
+        g_object_set_data_full(G_OBJECT(box), "width-membership", g_strdup(key->str), g_free);
+    }
+    g_string_free(key, TRUE);
+    g_list_free(children);
+}
+
 static void group_toggled(GtkToggleButton *header, gpointer data) {
     WorkspaceGroup *group = data;
     gboolean expanded = gtk_toggle_button_get_active(header);
@@ -246,6 +280,17 @@ static void render(Workspaces *self, const char *line) {
         g_string_free(tooltip, TRUE);
         group_toggled(GTK_TOGGLE_BUTTON(group->header), group);
         gtk_box_reorder_child(GTK_BOX(self->box), group->box, (gint)g);
+    }
+    if (group_count) {
+        /* Each drawer keeps its active slot reserved across group switches. */
+        if (g_object_get_data(G_OBJECT(self->box), "width-membership")) {
+            gtk_widget_set_size_request(self->box, -1, -1);
+            g_object_set_data(G_OBJECT(self->box), "width-membership", NULL);
+        }
+        for (guint g = 0; g < group_count; g++)
+            reserve_workspace_width(((WorkspaceGroup *)g_ptr_array_index(self->groups, g))->content);
+    } else {
+        reserve_workspace_width(self->box);
     }
     g_object_unref(parser);
 }
