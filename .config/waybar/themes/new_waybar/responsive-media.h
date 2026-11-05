@@ -123,11 +123,16 @@ static void responsive_media_allocate(GtkWidget *widget, GtkAllocation *allocati
         show_lyrics = ln > 0 && ln <= blank_width;
         lyrics_width = show_lyrics ? ln : 0;
     }
+    gint lyrics_x = show_lyrics ? MAX(0, (blank_width - lyrics_width) / 2) : 0;
+    /* Center in the actual free interval after the lyrics, up to the tray.
+     * When lyrics are hidden the interval starts at the workspace edge. */
+    gint free_start = show_lyrics ? lyrics_x + lyrics_width : 0;
+    title_x = free_start + MAX(0, (allocation->width - free_start - title_width) / 2);
     if (self->lyrics) {
         gtk_widget_set_child_visible(self->lyrics, show_lyrics);
         if (show_lyrics) {
             GtkAllocation part = *allocation;
-            part.x += MAX(0, (blank_width - lyrics_width) / 2);
+            part.x += lyrics_x;
             part.width = lyrics_width;
             gtk_widget_size_allocate(self->lyrics, &part);
         }
@@ -221,6 +226,6 @@ static gboolean media_install(GtkWidget *anchor) {
     gtk_box_pack_start(GTK_BOX(center), GTK_WIDGET(media), TRUE, TRUE, 0);
     gtk_box_reorder_child(GTK_BOX(center), GTK_WIDGET(media), 0);
     gtk_widget_show(GTK_WIDGET(media));
-    g_printerr("Responsive media: center when possible, move title before shrinking, hide lyrics only when total space is insufficient\n");
+    g_printerr("Responsive media: title centered between lyrics right edge and tray; shrink before hiding lyrics\n");
     return TRUE;
 }
