@@ -1,4 +1,4 @@
-/* Share the remaining bar width: shrink the title first, then hide lyrics.
+/* Share the remaining bar width: move the title, shrink it, then hide lyrics.
  * Child visibility is independent of module visibility, so fresh lyrics
  * cannot accidentally show a module that currently does not fit. */
 typedef struct {
@@ -14,10 +14,64 @@ static void media_width(GtkWidget *child, gint *minimum, gint *natural) {
         gtk_widget_get_preferred_width(child, minimum, natural);
 }
 
+static GtkWidget *media_lyric_label(GtkWidget *widget) {
+    if (GTK_IS_LABEL(widget)) return widget;
+    if (!GTK_IS_CONTAINER(widget)) return NULL;
+    GList *children = gtk_container_get_children(GTK_CONTAINER(widget));
+    GtkWidget *label = NULL;
+    for (GList *it = children; it && !label; it = it->next)
+        label = media_lyric_label(it->data);
+    g_list_free(children);
+    return label;
+}
+
+static void media_lyrics_width(GtkWidget *child, gint *minimum, gint *natural) {
+    *minimum = *natural = 0;
+    if (!child || !gtk_widget_get_visible(child)) return;
+    GtkWidget *label = media_lyric_label(child);
+    if (!label) {
+        media_width(child, minimum, natural);
+        return;
+    }
+    /* Keep markup/font attributes, but never measure newlines as glyphs or
+     * concatenate original and translation. Measure unconstrained lines. */
+    PangoLayout *layout = pango_layout_copy(gtk_label_get_layout(GTK_LABEL(label)));
+    pango_layout_set_single_paragraph_mode(layout, FALSE);
+    pango_layout_set_width(layout, -1);
+    pango_layout_set_height(layout, -1);
+    pango_layout_set_ellipsize(layout, PANGO_ELLIPSIZE_NONE);
+    gint width = 0;
+    for (GSList *it = pango_layout_get_lines_readonly(layout); it; it = it->next) {
+        PangoRectangle logical;
+        pango_layout_line_get_pixel_extents(it->data, NULL, &logical);
+        width = MAX(width, logical.width);
+    }
+    g_object_unref(layout);
+    /* Add the horizontal chrome once, not once per lyric line. */
+    for (GtkWidget *part = label; part; part = gtk_widget_get_parent(part)) {
+        GtkStyleContext *style = gtk_widget_get_style_context(part);
+        GtkStateFlags state = gtk_style_context_get_state(style);
+        GtkBorder padding, border, margin;
+        gtk_style_context_get_padding(style, state, &padding);
+        gtk_style_context_get_border(style, state, &border);
+        gtk_style_context_get_margin(style, state, &margin);
+        width += padding.left + padding.right + border.left + border.right;
+        if (GTK_IS_CONTAINER(part))
+            width += 2 * gtk_container_get_border_width(GTK_CONTAINER(part));
+        gint request_width, request_height;
+        gtk_widget_get_size_request(part, &request_width, &request_height);
+        width = MAX(width, request_width);
+        width += margin.left + margin.right +
+                 gtk_widget_get_margin_start(part) + gtk_widget_get_margin_end(part);
+        if (part == child) break;
+    }
+    *minimum = *natural = width;
+}
+
 static void responsive_media_width(GtkWidget *widget, gint *minimum, gint *natural) {
     ResponsiveMedia *self = (ResponsiveMedia *)widget;
     gint lm, ln, tm, tn;
-    media_width(self->lyrics, &lm, &ln);
+    media_lyrics_width(self->lyrics, &lm, &ln);
     media_width(self->title, &tm, &tn);
     /* Lyrics must never increase the bar's minimum width. */
     *minimum = tm;
@@ -50,23 +104,21 @@ static void responsive_media_height_for_width(GtkWidget *widget, gint width,
 static void responsive_media_allocate(GtkWidget *widget, GtkAllocation *allocation) {
     ResponsiveMedia *self = (ResponsiveMedia *)widget;
     gint lm, ln, tm, tn;
-    media_width(self->lyrics, &lm, &ln);
+    media_lyrics_width(self->lyrics, &lm, &ln);
     media_width(self->title, &tm, &tn);
     GTK_WIDGET_CLASS(responsive_media_parent_class)->size_allocate(widget, allocation);
-    /* The expanded middle region runs from workspaces to the tray.
-     * Keep the title at its midpoint even as lyrics shorten the title. */
-    gint midpoint = allocation->width / 2;
-    gint right_room = allocation->width - midpoint;
+    /* Prefer centering, but use the right-hand space before truncating.
+     * Hiding depends on total available width, not half of the region. */
     gint title_floor = MAX(tm, MIN(tn, 80));
-    gint with_lyrics = MAX(0, 2 * MIN(midpoint - ln, right_room));
-    gboolean show_lyrics = ln > 0 && with_lyrics >= title_floor;
+    gboolean show_lyrics = ln > 0 && allocation->width >= ln + title_floor;
     gint lyrics_width = show_lyrics ? ln : 0;
-    gint title_width = MIN(tn, MAX(0, 2 * MIN(midpoint - lyrics_width, right_room)));
+    gint title_width = MIN(tn, MAX(0, allocation->width - lyrics_width));
+    gint title_x = MAX(lyrics_width, (allocation->width - title_width) / 2);
     gboolean show_title = self->title && gtk_widget_get_visible(self->title) &&
                           title_width >= tm && title_width > 0;
     /* Lyrics occupy the blank region before the title, not the bar midpoint.
      * With no visible title, the entire available region is blank. */
-    gint blank_width = show_title ? midpoint - title_width / 2 : allocation->width;
+    gint blank_width = show_title ? title_x : allocation->width;
     if (!show_title) {
         show_lyrics = ln > 0 && ln <= blank_width;
         lyrics_width = show_lyrics ? ln : 0;
@@ -84,7 +136,7 @@ static void responsive_media_allocate(GtkWidget *widget, GtkAllocation *allocati
         gtk_widget_set_child_visible(self->title, title_width >= tm && title_width > 0);
         if (title_width >= tm && title_width > 0) {
             GtkAllocation part = *allocation;
-            part.x += midpoint - title_width / 2;
+            part.x += title_x;
             part.width = title_width;
             gtk_widget_size_allocate(self->title, &part);
         }
@@ -160,13 +212,15 @@ static gboolean media_install(GtkWidget *anchor) {
     if (GTK_IS_LABEL(lyrics)) {
         gtk_label_set_ellipsize(GTK_LABEL(lyrics), PANGO_ELLIPSIZE_NONE);
         gtk_label_set_max_width_chars(GTK_LABEL(lyrics), -1);
-        gtk_label_set_single_line_mode(GTK_LABEL(lyrics), TRUE);
+        /* Preserve original/translation newlines and their full height. */
+        gtk_label_set_single_line_mode(GTK_LABEL(lyrics), FALSE);
+        gtk_label_set_justify(GTK_LABEL(lyrics), GTK_JUSTIFY_CENTER);
     }
     media_move(lyrics_module, GTK_WIDGET(media));
     media_move(title_module, GTK_WIDGET(media));
     gtk_box_pack_start(GTK_BOX(center), GTK_WIDGET(media), TRUE, TRUE, 0);
     gtk_box_reorder_child(GTK_BOX(center), GTK_WIDGET(media), 0);
     gtk_widget_show(GTK_WIDGET(media));
-    g_printerr("Responsive media: title centered between workspaces and tray; title shrinks before lyrics hide\n");
+    g_printerr("Responsive media: center when possible, move title before shrinking, hide lyrics only when total space is insufficient\n");
     return TRUE;
 }
