@@ -65,6 +65,12 @@ window#waybar #workspaces button.urgent:not(.active) {
     animation: workspace-attention 1.2s ease-in-out infinite;
 }
 
+/* Symmetric insets keep the visible title centered on its allocation. */
+window#waybar #window {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 #custom-lyrics {
     background-color: transparent;
     color: @icon_color;

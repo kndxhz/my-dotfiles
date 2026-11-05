@@ -7,6 +7,7 @@
     "margin-right": 0,
     "spacing": 0,
     "fixed-center": false,
+    "expand-center": true,
     // Load Modules
     "include": [
         "~/.config/ml4w/settings/waybar-quicklinks.json",
@@ -16,23 +17,24 @@
     "modules-left": [
         "custom/appmenu",
         "cffi/workspaces",
-        "custom/lyrics",
         //"wlr/taskbar",
         //"group/quicklinks",
         //"custom/nowplaying",        
         "custom/empty"
     ],
     // Keep 1-5 visible; show higher workspace IDs while occupied or active.
+    // At >=10 actual workspaces, group the existing sequence into drawers of five.
     "cffi/workspaces": {
         "module_path": "/home/kndxhz/.config/waybar/themes/new_waybar/workspaces.so",
         "scroll-cooldown-ms": 300
     },
     // Modules Center
     "modules-center": [
+        "custom/lyrics",
         "hyprland/window",
         "custom/empty"
     ],
-    // Modules Right    
+    // Modules Right
     "modules-right": [
         "tray",
         "group/performance",

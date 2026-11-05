@@ -3,7 +3,7 @@ set -euo pipefail
 directory=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
 source_file="$directory/workspaces.c"
 library="$directory/workspaces.so"
-if [[ -f "$library" && "$library" -nt "$source_file" ]]; then
+if [[ -f "$library" && "$library" -nt "$source_file" && "$library" -nt "$directory/responsive-media.h" ]]; then
     exit 0
 fi
 temporary=$(mktemp "$directory/.workspaces.XXXXXX.so")
