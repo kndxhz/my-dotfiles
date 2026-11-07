@@ -141,3 +141,17 @@ window#waybar #battery.critical:not(.charging) {
 window#waybar #battery.critical:not(.charging) {
     animation-name: battery-white-alert;
 }
+
+/* Keep tooltips readable regardless of the system light/dark palette. */
+tooltip {
+    background-color: #000000;
+    background-image: none;
+    color: #ffffff;
+    opacity: 1;
+}
+
+tooltip label {
+    color: #ffffff;
+    background-color: transparent;
+    text-shadow: none;
+}
