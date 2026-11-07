@@ -4,7 +4,7 @@ hl.monitor({
     output = "desc:InfoVision Optoelectronics (Kunshan) Co.Ltd China 0x8C45",
     mode = "2240x1400@60.0",
     position = "1789x1440",
-    scale = 1.46,
+    scale = "auto",
     bitdepth = 10
 })
 hl.monitor({

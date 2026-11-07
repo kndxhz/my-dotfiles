@@ -40,7 +40,7 @@ local windowRules = {
         name = "ml4w-calendar",
         match = { class = "com.ml4w.calendar" },
         float = true,
-        move = { 21, 76 },
+        move = { "monitor_w-window_w-21", 76 },
         pin = true,
         size = { 400, 400 },
     },

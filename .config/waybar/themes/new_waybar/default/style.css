@@ -94,3 +94,50 @@ window#waybar #window {
     /* GTK CSS uses different properties for label alignment sometimes, but text-align is standard GTK */
     /* However, for Waybar modules which are often GtkLabel inside a box, we might need to rely on the module config or specific GTK properties */
 }
+
+/* User preference: fixed white text/icons in both solar theme modes.
+ * Set leaf widgets explicitly so module state colors cannot be inherited. */
+window#waybar label,
+window#waybar label:hover,
+window#waybar label:disabled,
+window#waybar button label,
+window#waybar button:hover label,
+window#waybar button:active label,
+window#waybar button:checked label,
+window#waybar image,
+window#waybar image:hover,
+tooltip label,
+menu label,
+menu image {
+    color: #ffffff;
+    opacity: 1;
+    text-shadow: none;
+    -gtk-icon-shadow: none;
+    -gtk-icon-palette: success #ffffff, warning #ffffff, error #ffffff;
+}
+
+window#waybar #tray image {
+    -gtk-icon-style: symbolic;
+    -gtk-icon-effect: none;
+}
+
+/* Battery is itself a label; override its state selectors explicitly. */
+window#waybar #battery,
+window#waybar #battery:hover,
+window#waybar #battery.charging,
+window#waybar #battery.plugged,
+window#waybar #battery.full,
+window#waybar #battery.warning,
+window#waybar #battery.critical:not(.charging) {
+    color: #ffffff;
+    text-shadow: none;
+}
+
+@keyframes battery-white-alert {
+    from { background-color: @error; color: #ffffff; }
+    to { background-color: @background; color: #ffffff; }
+}
+
+window#waybar #battery.critical:not(.charging) {
+    animation-name: battery-white-alert;
+}

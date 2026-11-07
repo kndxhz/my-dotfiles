@@ -1,0 +1,9 @@
+{
+  "location": "Tianchang, Chuzhou, Anhui",
+  "latitude": 32.684971,
+  "longitude": 119.009323,
+  "timezone": "Asia/Shanghai",
+  "qt_light_palette": "/usr/share/qt6ct/colors/airy.conf",
+  "qt_dark_palette": "/usr/share/qt6ct/colors/darker.conf",
+  "retry_seconds": 900
+}

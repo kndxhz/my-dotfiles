@@ -1,0 +1,13 @@
+[Unit]
+Description=Synchronize XWayland font DPI with Hyprland display scaling
+After=graphical-session.target
+PartOf=graphical-session.target
+ConditionEnvironment=DISPLAY
+ConditionEnvironment=HYPRLAND_INSTANCE_SIGNATURE
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 %h/.local/bin/sync-xwayland-font-dpi
+
+[Install]
+WantedBy=graphical-session.target

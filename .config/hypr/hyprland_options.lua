@@ -104,6 +104,20 @@ hl.config({
     },
 })
 
+-- Invert the built-in ThinkPad Fn row without changing external keyboards.
+for _, name in ipairs({
+    "at-translated-set-2-keyboard",
+    "thinkpad-extra-buttons",
+    "video-bus",
+    "intel-hid-events",
+}) do
+    hl.device({
+        name = name,
+        kb_file = os.getenv("HOME") .. "/.config/hypr/./thinkpad-fn-inverted.xkb",
+        resolve_binds_by_sym = true,
+    })
+end
+
 hl.device({
     name = "mosart-semi.-mi-wireless-combo-mouse",
     sensitivity = -0.75,

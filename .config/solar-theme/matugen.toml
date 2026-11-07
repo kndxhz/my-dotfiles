@@ -1,0 +1,4 @@
+[config]
+[templates.gtk]
+input_path = '~/.config/solar-theme/gtk-template.css'
+output_path = '~/.cache/solar-theme/gtk-light.css'
