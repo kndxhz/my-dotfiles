@@ -1,0 +1,25 @@
+#!/usr/bin/python3
+"""Match Xft font DPI to the primary Hyprland display, preserving resources."""
+import ast
+import json
+import re
+import subprocess
+
+def run(args):
+    return subprocess.run(args, check=True, capture_output=True, text=True, timeout=10).stdout
+
+monitors = json.loads(run(['hyprctl', 'monitors', '-j']))
+if not monitors:
+    raise SystemExit('No active display')
+monitor = next((m for m in monitors if m['name'].startswith('eDP')), monitors[0])
+option = json.loads(run(['hyprctl', '-j', 'getoption', 'xwayland:force_zero_scaling']))
+zero = option.get('bool', option.get('int', False))
+dpi = round(96 * monitor['scale']) if zero else 96
+result = run(['xprop', '-root', '-notype', 'RESOURCE_MANAGER']).strip()
+resources = ast.literal_eval(result.split(' = ', 1)[1]) if ' = ' in result else ''
+pattern = r'(?m)^Xft\.dpi\s*:.*$'
+line = 'Xft.dpi:\t' + str(dpi)
+updated = re.sub(pattern, lambda _: line, resources) if re.search(pattern, resources) else resources.rstrip('\n') + ('\n' if resources else '') + line + '\n'
+if updated != resources:
+    run(['xprop', '-root', '-f', 'RESOURCE_MANAGER', '8s', '-set', 'RESOURCE_MANAGER', updated])
+    print('XWayland Xft.dpi=' + str(dpi) + ' for ' + monitor['name'])

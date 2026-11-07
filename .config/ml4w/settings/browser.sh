@@ -1,1 +1,1 @@
-google-chrome-stable --ozone-platform=wayland --disable-vulkan
+google-chrome-stable --ozone-platform=wayland

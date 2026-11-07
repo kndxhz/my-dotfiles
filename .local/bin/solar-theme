@@ -1,0 +1,180 @@
+#!/usr/bin/python3
+"""Independent GTK/Qt solar theme. Solar data: https://sunrise-sunset.org/."""
+import argparse
+import datetime as dt
+import fcntl
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+import urllib.parse
+from zoneinfo import ZoneInfo
+
+HOME = Path.home()
+CONFIG = Path(os.environ.get('XDG_CONFIG_HOME', HOME / '.config'))
+ROOT = CONFIG / 'solar-theme'
+CACHE = Path(os.environ.get('XDG_CACHE_HOME', HOME / '.cache')) / 'solar-theme'
+STATE = Path(os.environ.get('XDG_STATE_HOME', HOME / '.local/state')) / 'solar-theme'
+
+def run(args):
+    return subprocess.run(args, check=True, text=True, capture_output=True, timeout=45).stdout.strip()
+
+def save(path, text):
+    path = path.resolve()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists() and path.read_text() == text:
+        return False
+    mode = path.stat().st_mode & 0o777 if path.exists() else 0o600
+    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix='.' + path.name + '.')
+    try:
+        with os.fdopen(fd, 'w') as handle:
+            handle.write(text)
+        os.chmod(tmp, mode)
+        os.replace(tmp, path)
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+    return True
+
+def backup(path):
+    target = STATE / 'backup' / path.relative_to(HOME)
+    if path.exists() and not target.exists():
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, target)
+
+def ini_update(path, section, updates):
+    backup(path)
+    text = path.read_text() if path.exists() else ''
+    match = re.search(r'(?ms)^\[' + re.escape(section) + r'\][^\n]*\n(.*?)(?=^\[|\Z)', text)
+    if not match:
+        text += '\n[' + section + ']\n'
+        match = re.search(r'(?ms)^\[' + re.escape(section) + r'\][^\n]*\n(.*?)(?=^\[|\Z)', text)
+    body = match.group(1)
+    for key, value in updates.items():
+        pattern = r'(?m)^' + re.escape(key) + r'\s*=.*$'
+        line = key + '=' + str(value)
+        if re.search(pattern, body):
+            body = re.sub(pattern, lambda _: line, body)
+        else:
+            body = body.rstrip('\n') + '\n' + line + '\n'
+    return save(path, text[:match.start(1)] + body + text[match.end(1):])
+
+def solar_times(cfg, now):
+    key = {k: cfg[k] for k in ('latitude', 'longitude', 'timezone')}
+    key['date'] = now.date().isoformat()
+    cached = CACHE / 'sun.json'
+    if cached.exists():
+        try:
+            data = json.loads(cached.read_text())
+            if data['key'] == key:
+                return data
+        except (ValueError, KeyError):
+            pass
+    retry = CACHE / 'last-attempt'
+    if retry.exists() and time.time() - retry.stat().st_mtime < cfg['retry_seconds']:
+        print('No current solar data; retaining theme until next network retry.')
+        return None
+    retry.touch()
+    query = urllib.parse.urlencode({'lat': cfg['latitude'], 'lng': cfg['longitude'],
+        'date': key['date'], 'tzid': cfg['timezone'], 'formatted': 0})
+    try:
+        result = json.loads(run(['/usr/bin/curl', '--fail', '--silent', '--show-error',
+            '--max-time', '20', 'https://api.sunrise-sunset.org/json?' + query]))
+        if result['status'] != 'OK':
+            raise ValueError('API status is not OK')
+        sunrise = dt.datetime.fromisoformat(result['results']['sunrise'])
+        sunset = dt.datetime.fromisoformat(result['results']['sunset'])
+        if sunrise.tzinfo is None or sunset.tzinfo is None or not sunrise < sunset:
+            raise ValueError('Invalid solar timestamps')
+        if sunrise.astimezone(now.tzinfo).date() != now.date():
+            raise ValueError('API returned the wrong date')
+        data = {'key': key, 'sunrise': sunrise.isoformat(), 'sunset': sunset.isoformat(),
+                'source': 'https://sunrise-sunset.org/'}
+        save(cached, json.dumps(data, indent=2) + '\n')
+        return data
+    except (subprocess.SubprocessError, ValueError, KeyError) as exc:
+        print('Solar fetch failed; keeping current theme: ' + str(exc), file=sys.stderr)
+        return None
+
+def gtk_palette(mode):
+    for version in ('3.0', '4.0'):
+        target = CONFIG / ('gtk-' + version) / 'colors.css'
+        if not target.exists():
+            continue
+        backup(target)
+        original = STATE / 'backup' / target.relative_to(HOME)
+        dark = original.read_text()
+        light = ROOT / ('gtk-' + version + '-light.css')
+        if not light.exists():
+            # Preserve the original dark palette, deriving a matching light palette.
+            match = re.search(r'@define-color accent_color\s+(#[0-9a-fA-F]{6})', dark)
+            if not match:
+                raise ValueError('Cannot identify GTK accent color in ' + str(target))
+            generator = HOME / '.local/bin/matugen'
+            run([str(generator), '-c', str(ROOT / 'matugen.toml'), '-m', 'light',
+                 'color', 'hex', match.group(1)])
+            save(light, (CACHE / 'gtk-light.css').read_text())
+        save(target, dark if mode == 'dark' else light.read_text())
+
+def apply(mode, cfg):
+    palette = Path(cfg['qt_' + mode + '_palette'])
+    if not palette.is_file():
+        raise ValueError('Qt palette not found: ' + str(palette))
+    gtk_palette(mode)
+    for version in ('3.0', '4.0'):
+        ini_update(CONFIG / ('gtk-' + version) / 'settings.ini', 'Settings',
+                   {'gtk-application-prefer-dark-theme': int(mode == 'dark')})
+    ini_update(CONFIG / 'qt6ct/qt6ct.conf', 'Appearance',
+               {'color_scheme_path': palette, 'custom_palette': 'true'})
+    schema = 'org.gnome.desktop.interface'
+    desired = 'prefer-' + mode
+    old = run(['/usr/bin/gsettings', 'get', schema, 'color-scheme'])
+    if old.strip("'") != desired:
+        run(['/usr/bin/gsettings', 'set', schema, 'color-scheme', desired])
+    marker = STATE / 'mode'
+    previous = marker.read_text().strip() if marker.exists() else None
+    save(marker, mode + '\n')
+    if previous != mode:
+        print('Applied ' + mode + ' theme: GTK, desktop preference, Qt6 palette.')
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('mode', nargs='?', choices=['auto', 'light', 'dark', 'status'], default='auto')
+    args = parser.parse_args()
+    cfg = json.loads((ROOT / 'config.json').read_text())
+    CACHE.mkdir(parents=True, exist_ok=True)
+    STATE.mkdir(parents=True, exist_ok=True)
+    with (STATE / 'lock').open('w') as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return
+        now = dt.datetime.now(ZoneInfo(cfg['timezone']))
+        if args.mode == 'status':
+            print('Local time: ' + now.isoformat())
+            print('Mode: ' + ((STATE / 'mode').read_text().strip() if (STATE / 'mode').exists() else 'not applied'))
+            if (CACHE / 'sun.json').exists():
+                print((CACHE / 'sun.json').read_text())
+            return
+        if args.mode == 'auto':
+            data = solar_times(cfg, now)
+            if data is None:
+                return
+            rise = dt.datetime.fromisoformat(data['sunrise'])
+            setting = dt.datetime.fromisoformat(data['sunset'])
+            mode = 'light' if rise <= now < setting else 'dark'
+        else:
+            mode = args.mode
+        apply(mode, cfg)
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception as exc:
+        print('solar-theme: ' + str(exc), file=sys.stderr)
+        sys.exit(1)

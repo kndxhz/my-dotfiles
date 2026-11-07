@@ -12,6 +12,9 @@
 /* ---- Configuration ---- */
 configuration {
     modi:                       "drun,filebrowser,window,run";
+    terminal:                   "kitty";
+    run-command:                "{cmd}";
+    run-shell-command:          "{terminal} --hold -e {cmd}";
     font:                       "Fira Sans 11";
     show-icons:                 true;
     display-drun:                " ";

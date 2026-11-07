@@ -34,11 +34,15 @@ terminate_clients() {
 
 		echo ":: PID $pid has terminated."
 	done
-	bash $home/.config/ml4w/listeners.sh --stopall
+	bash "$HOME/.config/ml4w/listeners.sh" --stopall
 }
 
 if [[ "$1" == "exit" ]]; then
 	echo ":: Exit"
+	# Let UWSM stop managed applications and the compositor in order.
+	if command -v uwsm >/dev/null 2>&1 && uwsm check is-active; then
+		exec uwsm stop
+	fi
 	terminate_clients
 	sleep 0.5
 	hyprctl dispatch exit

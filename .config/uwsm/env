@@ -1,0 +1,3 @@
+# Theme integration for applications started in this UWSM session.
+# Day/night palette selection is managed by solar-theme.service.
+export QT_QPA_PLATFORMTHEME=qt6ct

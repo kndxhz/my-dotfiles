@@ -104,7 +104,8 @@ bindCommand("XF86MonBrightnessDown", "brightnessctl -q s 10%-")
 bindCommand("XF86AudioRaiseVolume", "pactl set-sink-volume @DEFAULT_SINK@ +5%", { repeating = true })
 bindCommand("XF86AudioLowerVolume", "pactl set-sink-volume @DEFAULT_SINK@ -5%", { repeating = true })
 bindCommand("XF86AudioMute", "pactl set-sink-mute @DEFAULT_SINK@ toggle")
-bindCommand("XF86AudioPlay", "playerctl play-pause")
+-- Wait 350 ms to distinguish a single headset click from a double click.
+bindCommand("XF86AudioPlay", "python3 " .. hyprScripts .. "/headset-click.py")
 bindCommand("XF86AudioPause", "playerctl pause")
 bindCommand("XF86AudioNext", "playerctl next")
 bindCommand("XF86AudioPrev", "playerctl previous")
@@ -114,7 +115,5 @@ bindCommand("XF86Tools", "flatpak run com.ml4w.settings")
 bindCommand("code:238", "brightnessctl -d smc::kbd_backlight s +10")
 bindCommand("code:237", "brightnessctl -d smc::kbd_backlight s 10-")
 
-bindCommand("F2", "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-")
-bindCommand("F3", "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+")
-bindCommand("F4", "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle")
+-- Leave plain F1-F12 to applications; handle media actions via XF86 keys.
 bindCommand("XF86TouchpadToggle", hyprScripts .. "/toggle-trackpoint.sh")
