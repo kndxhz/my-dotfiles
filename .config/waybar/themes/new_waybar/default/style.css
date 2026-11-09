@@ -95,8 +95,9 @@ window#waybar #window {
     /* However, for Waybar modules which are often GtkLabel inside a box, we might need to rely on the module config or specific GTK properties */
 }
 
-/* User preference: fixed white text/icons in both solar theme modes.
- * Set leaf widgets explicitly so module state colors cannot be inherited. */
+/* User preference: fixed white bar text/icons in both solar theme modes.
+ * Set leaf widgets explicitly so module state colors cannot be inherited.
+ * Menus retain GTK theme colors so foreground and background switch together. */
 window#waybar label,
 window#waybar label:hover,
 window#waybar label:disabled,
@@ -106,9 +107,7 @@ window#waybar button:active label,
 window#waybar button:checked label,
 window#waybar image,
 window#waybar image:hover,
-tooltip label,
-menu label,
-menu image {
+tooltip label {
     color: #ffffff;
     opacity: 1;
     text-shadow: none;
