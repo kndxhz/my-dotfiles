@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 #            _
 #    _______| |__  _ __ ___
 #   |_  / __| '_ \| '__/ __|
@@ -36,9 +43,6 @@ if [ -f ~/.zshrc_custom ]; then
     source ~/.zshrc_custom
 fi
 #$(thefuck --alias)
-# >>> proxyctl >>>
-[ -f "/home/kndxhz/.config/zsh/proxy.zsh" ] && source "/home/kndxhz/.config/zsh/proxy.zsh"
-# <<< proxyctl <<<
 
 # User-local binaries
 [ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
@@ -46,4 +50,6 @@ fi
 eval $(thefuck --alias)
 
 # opencode
-export PATH=/home/kndxhz/.opencode/bin:$PATH
+export PATH="$HOME/.opencode/bin:$PATH"
+
+# Powerlevel10k customization: ~/.p10k.zsh (loaded by the ML4W customization module).
