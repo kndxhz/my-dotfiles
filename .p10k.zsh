@@ -29,6 +29,22 @@ typeset -g POWERLEVEL9K_CONTEXT_ROOT_FOREGROUND=1
 typeset -g POWERLEVEL9K_CONTEXT_FOREGROUND=4
 typeset -g POWERLEVEL9K_CONTEXT_{REMOTE,REMOTE_SUDO}_FOREGROUND=4
 
+# Show complete signal names and numbers, e.g. SIGINT(2).
+typeset -g POWERLEVEL9K_STATUS_VERBOSE_SIGNAME=true
+
+# Always show the final exit code on the right, including successful commands.
+(( ${POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS[(Ie)status]} )) ||
+  POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status ${POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS[@]})
+typeset -g POWERLEVEL9K_STATUS_{OK,OK_PIPE,ERROR,ERROR_SIGNAL,ERROR_PIPE}=true
+typeset -g POWERLEVEL9K_STATUS_{OK,OK_PIPE}_FOREGROUND=10
+typeset -g POWERLEVEL9K_STATUS_{ERROR,ERROR_SIGNAL,ERROR_PIPE}_FOREGROUND=3
+typeset -g POWERLEVEL9K_STATUS_SHOW_PIPESTATUS=false
+# Show only the exit code and signal text, without check or cross icons.
+typeset -g POWERLEVEL9K_STATUS_{OK,OK_PIPE,ERROR,ERROR_SIGNAL,ERROR_PIPE}_VISUAL_IDENTIFIER_EXPANSION=''
+# P10k's saved status is used because $? can change while rendering the prompt.
+# Keep signal descriptions when they differ from the numeric exit code.
+typeset -g POWERLEVEL9K_STATUS_CONTENT_EXPANSION='${_p9k__status}${${P9K_CONTENT:#${_p9k__status}}:+ · ${P9K_CONTENT}}'
+
 # Color the input marker explicitly instead of using the unstyled line terminator.
 (( ${POWERLEVEL9K_LEFT_PROMPT_ELEMENTS[(Ie)prompt_char]} )) ||
   POWERLEVEL9K_LEFT_PROMPT_ELEMENTS+=(prompt_char)
