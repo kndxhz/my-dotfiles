@@ -28,6 +28,7 @@ plugins=(
     history
     command-not-found
     you-should-use
+    nice-exit-code
     zsh-syntax-highlighting
 )
 
