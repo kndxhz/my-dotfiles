@@ -117,3 +117,14 @@ bindCommand("code:237", "brightnessctl -d smc::kbd_backlight s 10-")
 
 -- Leave plain F1-F12 to applications; handle media actions via XF86 keys.
 bindCommand("XF86TouchpadToggle", hyprScripts .. "/toggle-trackpoint.sh")
+
+-- In this custom XKB map the VT symbols exist only on the Ctrl+Alt level, so
+-- resolving them by symbol at bind-registration time returns keycode 0. Match
+-- the physical XKB keycodes instead; these correspond to the observed wev events.
+local vtKeycodes = { 121, 122, 123, 256, 232, 233, 235, 246, 452, 453, 454 }
+for vt, keycode in ipairs(vtKeycodes) do
+    bindCommand(
+        "CTRL + ALT + code:" .. tostring(keycode),
+        "busctl --system call org.freedesktop.login1 /org/freedesktop/login1/seat/seat0 org.freedesktop.login1.Seat SwitchTo u " .. vt
+    )
+end

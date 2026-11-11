@@ -98,9 +98,9 @@
         "exec": "~/.local/bin/waybar-lyrics 2> /dev/null",
         "return-type": "json",
         "format": "{}",
-        "on-click": "playerctl play-pause",
-        "on-click-right": "playerctl next",
-        "on-click-middle": "playerctl previous",
+        "on-click": "waybar-lyrics play-pause",
+        "on-click-right": "waybar-lyrics next",
+        "on-click-middle": "waybar-lyrics previous",
         "tooltip": true,
         "justify": "center"  // GTK label justification
     },
