@@ -120,6 +120,18 @@ window#waybar #tray image {
     -gtk-icon-effect: none;
 }
 
+/* Attached GTK menus can be descendants of window#waybar in the CSS tree.
+ * Inherit each menu item's GTK state color instead of the white bar color. */
+window#waybar menu menuitem label,
+window#waybar menu menuitem label:hover,
+window#waybar menu menuitem label:disabled,
+window#waybar menu menuitem image,
+window#waybar menu menuitem image:hover,
+window#waybar #tray menu menuitem image {
+    color: inherit;
+    -gtk-icon-palette: inherit;
+}
+
 /* Battery is itself a label; override its state selectors explicitly. */
 window#waybar #battery,
 window#waybar #battery:hover,
