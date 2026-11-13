@@ -136,11 +136,19 @@ def apply(mode, cfg):
     old = run(['/usr/bin/gsettings', 'get', schema, 'color-scheme'])
     if old.strip("'") != desired:
         run(['/usr/bin/gsettings', 'set', schema, 'color-scheme', desired])
+    # Hyprland reads GTK colors when loading its Lua configuration.
+    # Record the applied palette only after a successful reload, so failures retry.
+    if os.environ.get('HYPRLAND_INSTANCE_SIGNATURE'):
+        gtk_colors = (CONFIG / 'gtk-4.0/colors.css').read_text()
+        applied = STATE / 'hyprland-palette.css'
+        if not applied.exists() or applied.read_text() != gtk_colors:
+            run(['/usr/bin/hyprctl', 'reload'])
+            save(applied, gtk_colors)
     marker = STATE / 'mode'
     previous = marker.read_text().strip() if marker.exists() else None
     save(marker, mode + '\n')
     if previous != mode:
-        print('Applied ' + mode + ' theme: GTK, desktop preference, Qt6 palette.')
+        print('Applied ' + mode + ' theme: GTK, desktop preference, Qt6 palette, Hyprland borders.')
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)

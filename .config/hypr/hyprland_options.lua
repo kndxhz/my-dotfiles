@@ -1,5 +1,21 @@
 local colors = require("./hyprland_colors")
 
+-- Follow the GTK palette maintained by solar-theme in both light and dark mode.
+local border_active = colors.primary
+local border_inactive = colors.outline_variant
+local config_dir = os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")
+local palette = io.open(config_dir .. "/gtk-4.0/colors.css", "r")
+if palette then
+    local css = palette:read("*a")
+    palette:close()
+    local function gtk_color(name)
+        local hex = css:match("@define%-color%s+" .. name .. "%s+#(%x%x%x%x%x%x)%s*;")
+        return hex and ("rgb(" .. hex .. ")")
+    end
+    border_active = gtk_color("accent_color") or border_active
+    border_inactive = gtk_color("headerbar_bg_color") or border_inactive
+end
+
 hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
 hl.env("XDG_SESSION_TYPE", "wayland")
 hl.env("XDG_SESSION_DESKTOP", "Hyprland")
@@ -31,8 +47,8 @@ hl.config({
         gaps_out = 10,
         border_size = 2,
         col = {
-            active_border = colors.on_surface,
-            inactive_border = colors.primary,
+            active_border = border_active,
+            inactive_border = border_inactive,
         },
         layout = "dwindle",
         resize_on_border = true,
