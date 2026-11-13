@@ -1,6 +1,9 @@
 # Powerlevel10k classic preset. Run `p10k configure` to personalize it.
 source "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/config/p10k-classic.zsh"
 
+# Hide the clock while keeping the command execution duration.
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(${POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS:#time})
+
 # Follow Kitty's Matugen palette through ANSI colors rather than fixed RGB.
 # Transparent segments inherit the terminal's background and opacity.
 () {

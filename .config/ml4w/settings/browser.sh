@@ -1,2 +1,2 @@
 #!/bin/sh
-exec "$HOME/.local/bin/google-chrome-stable" --ozone-platform=wayland "$@"
+exec /usr/bin/google-chrome-stable --ozone-platform=wayland "$@"
