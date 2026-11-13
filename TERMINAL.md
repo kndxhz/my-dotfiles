@@ -43,7 +43,9 @@ ML4W 的其余桌面配置沿用原有安装方式。zsh 自定义入口为 `.co
 
 `.p10k.zsh` 在 Powerlevel10k 经典预设上覆盖配色，使用终端 ANSI 调色板以跟随 Kitty/Matugen。输入符号为 `❯`，正常时为壁纸主题主色，错误时为红色。请在此文件调整个性化配置。
 
-Matugen 的 Kitty 模板与 Waybar 使用同一份壁纸调色板，生成 `~/.config/kitty/colors-matugen.conf` 后通过 SIGUSR1 通知已打开的 Kitty 重载。目录、输入符号使用 ANSI color4，对应 primary，color12 和链接色也同步主色。终端始终使用黑色背景、浅色正文，保留深色 ANSI 配色；只有强调色随壁纸取色更新。
+Matugen 的 Kitty 模板与 Waybar 使用同一份壁纸调色板，生成 `~/.config/kitty/colors-matugen.conf` 后通过 SIGUSR1 通知已打开的 Kitty 重载。终端始终使用黑色背景、浅色正文；ANSI color4/12 使用 primary 的亮暗阶，color5/13 使用 tertiary 阶，color6/14 使用 secondary 阶。Powerlevel10k 的目录、Git 状态、上下文和耗时分别使用这些 ANSI 色阶。
+
+Chrome 多色主题由 solar-theme 生成到 `~/.config/chrome-wallpaper-theme/manifest.json`。首次在 `chrome://extensions` 加载此文件夹并保持启用。用户级启动脚本 `~/.local/bin/google-chrome-stable` 每次启动前清理该目录的 `Cached Theme.pak`，使下一次完整启动重建主题。Super+B 和用户级应用菜单已接入；浏览器运行中不即时刷新，`chrome://restart` 和直接调用 `/usr/bin/google-chrome-stable` 会绕过脚本。不要安装 CRX 副本，否则无法跟随源目录同步。
 
 bgnotify 阈值以 `.config/zshrc/custom/20-customization` 中的 `bgnotify_threshold` 为准；当前为 301 秒。
 

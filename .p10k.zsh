@@ -20,14 +20,15 @@ source "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/config/p10k-
 }
 typeset -g POWERLEVEL9K_BACKGROUND=
 typeset -g POWERLEVEL9K_DIR_FOREGROUND=4
-typeset -g POWERLEVEL9K_DIR_ANCHOR_FOREGROUND=4
+typeset -g POWERLEVEL9K_DIR_ANCHOR_FOREGROUND=12
 typeset -g POWERLEVEL9K_DIR_SHORTENED_FOREGROUND=8
 typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=4
-typeset -g POWERLEVEL9K_VCS_VISUAL_IDENTIFIER_COLOR=10
+typeset -g POWERLEVEL9K_VCS_VISUAL_IDENTIFIER_COLOR=5
 typeset -g POWERLEVEL9K_VCS_LOADING_VISUAL_IDENTIFIER_COLOR=8
 typeset -g POWERLEVEL9K_CONTEXT_ROOT_FOREGROUND=1
-typeset -g POWERLEVEL9K_CONTEXT_FOREGROUND=4
-typeset -g POWERLEVEL9K_CONTEXT_{REMOTE,REMOTE_SUDO}_FOREGROUND=4
+typeset -g POWERLEVEL9K_CONTEXT_FOREGROUND=6
+typeset -g POWERLEVEL9K_CONTEXT_{REMOTE,REMOTE_SUDO}_FOREGROUND=14
+typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND=13
 
 # Show complete signal names and numbers, e.g. SIGINT(2).
 typeset -g POWERLEVEL9K_STATUS_VERBOSE_SIGNAME=true
@@ -137,7 +138,7 @@ functions[_p10k_system_git_formatter_base]=$functions[my_git_formatter]
 function my_git_formatter() {
   emulate -L zsh
   _p10k_system_git_formatter_base "$@"
-  my_git_format=${my_git_format//\%76F/\%10F}
+  my_git_format=${my_git_format//\%76F/\%5F}
   my_git_format=${my_git_format//\%178F/\%3F}
   my_git_format=${my_git_format//\%39F/\%4F}
   my_git_format=${my_git_format//\%196F/\%1F}

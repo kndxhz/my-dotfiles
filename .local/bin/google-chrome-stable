@@ -1,0 +1,14 @@
+#!/usr/bin/python3
+"""Invalidate the local wallpaper theme cache before launching Chrome."""
+import os
+from pathlib import Path
+import sys
+
+config = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config'))
+cache = config / 'chrome-wallpaper-theme' / 'Cached Theme.pak'
+try:
+    cache.unlink(missing_ok=True)
+except OSError as error:
+    print(f'Chrome wallpaper cache: {error}', file=sys.stderr)
+
+os.execv('/usr/bin/google-chrome-stable', ['google-chrome-stable', *sys.argv[1:]])
