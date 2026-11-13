@@ -41,7 +41,9 @@ ML4W 的其余桌面配置沿用原有安装方式。zsh 自定义入口为 `.co
 
 ## 提示符与通知
 
-`.p10k.zsh` 在 Powerlevel10k 经典预设上覆盖配色，使用终端 ANSI 调色板以跟随 Kitty/Matugen。输入符号为 `❯`，正常时为主题蓝色，错误时为红色。请在此文件调整个性化配置。
+`.p10k.zsh` 在 Powerlevel10k 经典预设上覆盖配色，使用终端 ANSI 调色板以跟随 Kitty/Matugen。输入符号为 `❯`，正常时为壁纸主题主色，错误时为红色。请在此文件调整个性化配置。
+
+Matugen 的 Kitty 模板与 Waybar 使用同一份壁纸调色板，生成 `~/.config/kitty/colors-matugen.conf` 后通过 SIGUSR1 通知已打开的 Kitty 重载。目录、输入符号使用 ANSI color4，对应 primary，color12 和链接色也同步主色。终端始终使用黑色背景、浅色正文，保留深色 ANSI 配色；只有强调色随壁纸取色更新。
 
 bgnotify 阈值以 `.config/zshrc/custom/20-customization` 中的 `bgnotify_threshold` 为准；当前为 301 秒。
 

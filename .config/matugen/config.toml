@@ -1,10 +1,9 @@
 [config]
 
-# Keep the original saved Kitty palette; do not regenerate it.
-# [templates.kitty]
-# input_path = '~/.config/matugen/templates/kitty-colors.conf'
-# output_path = '~/.config/kitty/colors-matugen.conf'
-# post_hook = 'pkill -SIGUSR1 kitty'
+[templates.kitty]
+input_path = '~/.config/matugen/templates/kitty-colors.conf'
+output_path = '~/.config/kitty/colors-matugen.conf'
+post_hook = 'pkill -SIGUSR1 kitty || true'
 
 [templates.btop]
 input_path = '~/.config/matugen/templates/btop.theme'
@@ -20,7 +19,7 @@ post_hook = 'pkill -USR2 btop'
 [templates.waybar]
 input_path = '~/.config/matugen/templates/colors.css'
 output_path = '~/.config/waybar/colors.css'
-post_hook = 'hyprctl reload'
+post_hook = 'hyprctl reload; python3 "$HOME/.local/bin/solar-theme" chrome-sync'
 
 [templates.rofi]
 input_path = '~/.config/matugen/templates/rofi-colors.rasi'
@@ -33,6 +32,10 @@ output_path = '~/.config/gtk-3.0/colors.css'
 [templates.gtk4]
 input_path = '~/.config/matugen/templates/gtk-colors.css'
 output_path = '~/.config/gtk-4.0/colors.css'
+
+[templates.qt6ct]
+input_path = '~/.config/matugen/templates/qt6ct.conf'
+output_path = '~/.config/qt6ct/colors/matugen.conf'
 
 [templates.pywalfox]
 input_path = '~/.config/matugen/templates/pywalfox-colors.json'
