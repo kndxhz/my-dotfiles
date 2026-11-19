@@ -20,7 +20,7 @@
       "default": ""
     },
     "persistent-workspaces": {
-      "*": 5
+            "*": 5
     }
   },
   // Taskbar
@@ -95,7 +95,7 @@
 
     // Waybar Lyrics
     "custom/lyrics": {
-        "exec": "~/.local/bin/waybar-lyrics 2> /dev/null",
+        "exec": "waybar-lyrics 2> /dev/null",
         "return-type": "json",
         "format": "{}",
         "on-click": "waybar-lyrics play-pause",
