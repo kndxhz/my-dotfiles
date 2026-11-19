@@ -1,1 +1,8 @@
 @import "themes/modern/style.css";
+
+/* Preserve the original layout and use translucent surfaces for blur. */
+@define-color base alpha(@surface, 0.30);
+@define-color surface_custom alpha(@surface_container_high, 0.35);
+@define-color hovercolor alpha(@surface_container_high, 0.50);
+@define-color buttoncolor alpha(@inverse_primary, 0.22);
+@define-color hoverbutton alpha(@inverse_primary, 0.40);

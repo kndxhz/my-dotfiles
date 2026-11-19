@@ -1,1 +1,19 @@
 @import "themes/modern/style.css";
+
+button, button label {
+    text-shadow: none;
+    -gtk-icon-shadow: none;
+}
+
+/* Fixed dim backdrop; keep the original button layout and rounded corners. */
+window {
+    background-color: rgba(0, 0, 0, 0.20);
+}
+
+button {
+    background-color: alpha(@surface_container_high, 0.40);
+}
+
+button:focus, button:hover {
+    background-color: alpha(@primary_container, 0.60);
+}
