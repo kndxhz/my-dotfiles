@@ -1,0 +1,118 @@
+/* Real background blur comes from the existing Hyprland rofi layer rule. */
+* {
+    font: "Segoe UI 12";
+    background-color: transparent;
+    text-color: #f3f3f3;
+    glass: rgba(20, 22, 28, 0.70);
+    rim: rgba(255, 255, 255, 0.20);
+    muted: #b7becb;
+    accent: #9ecafc;
+    selected: rgba(255, 255, 255, 0.12);
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+    spacing: 0px;
+}
+
+window {
+    width: 840px;
+    location: center;
+    anchor: center;
+    fullscreen: false;
+    transparency: "real";
+    background-color: @glass;
+    border: 1px;
+    border-color: @rim;
+    border-radius: 14px;
+    padding: 8px;
+}
+
+mainbox {
+    orientation: vertical;
+    children: [ "inputbar", "listview", "message" ];
+    spacing: 8px;
+}
+
+inputbar {
+    children: [ "textbox-search", "entry" ];
+    orientation: horizontal;
+    spacing: 14px;
+    padding: 14px 16px;
+    border: 0px 0px 1px 0px;
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+textbox-search {
+    str: "⌕";
+    font: "Segoe UI 24";
+    text-color: @accent;
+    expand: false;
+    vertical-align: 0.5;
+}
+
+entry {
+    font: "Segoe UI 18";
+    placeholder: "键入以搜索…";
+    placeholder-color: @muted;
+    vertical-align: 0.5;
+    cursor: text;
+}
+
+listview {
+    columns: 1;
+    lines: 6;
+    fixed-height: false;
+    dynamic: true;
+    layout: vertical;
+    spacing: 4px;
+    scrollbar: false;
+    cycle: true;
+}
+
+element {
+    children: [ "element-icon", "element-text" ];
+    padding: 10px 14px;
+    spacing: 14px;
+    border: 0px 0px 0px 3px;
+    border-color: transparent;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+element normal.normal, element alternate.normal,
+element normal.active, element alternate.active,
+element normal.urgent, element alternate.urgent {
+    background-color: transparent;
+    text-color: #f3f3f3;
+}
+
+element selected.normal, element selected.active, element selected.urgent {
+    background-color: @selected;
+    text-color: #ffffff;
+    border-color: @accent;
+}
+
+element-icon {
+    size: 28px;
+    cursor: inherit;
+}
+
+element-text {
+    vertical-align: 0.5;
+    text-color: inherit;
+    cursor: inherit;
+    highlight: bold;
+}
+
+message {
+    padding: 8px 14px;
+}
+
+textbox {
+    text-color: @muted;
+}
+
+error-message {
+    children: [ "textbox" ];
+    padding: 16px;
+}

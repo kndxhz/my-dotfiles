@@ -1,0 +1,52 @@
+/* The original centered theme is preserved in powertoys-glass.rasi. */
+@import "~/.config/rofi/powertoys-glass.rasi"
+
+window {
+    location: northwest;
+    anchor: northwest;
+    width: 360px;
+    height: 576px;
+    x-offset: 8px;
+    y-offset: 0px;
+    padding: 10px;
+}
+
+inputbar {
+    spacing: 12px;
+    padding: 14px 12px;
+}
+
+textbox-search {
+    font: "Segoe UI 24";
+}
+
+entry {
+    font: "Segoe UI 16";
+    placeholder: "搜索…";
+}
+
+listview {
+    fixed-height: true;
+    dynamic: false;
+    spacing: 5px;
+}
+
+element {
+    padding: 11px 10px;
+    spacing: 12px;
+}
+
+element-icon {
+    size: 28px;
+}
+
+element-text {
+    font: "Segoe UI 14";
+}
+
+/* Override the imported theme's 92% width for narrow rofi windows. */
+@media (max-width: 500px) {
+    window {
+        width: 360px;
+    }
+}

@@ -1,0 +1,21 @@
+/* Restore with: rofi -config ~/.config/rofi/config-centered-backup.rasi -show drun */
+configuration {
+    modi: "drun,filebrowser,window,run";
+    terminal: "kitty";
+    run-command: "{cmd}";
+    run-shell-command: "{terminal} --hold -e {cmd}";
+    font: "Segoe UI 12";
+    show-icons: true;
+    display-drun: "应用";
+    display-run: "命令";
+    display-filebrowser: "文件";
+    display-window: "窗口";
+    drun-display-format: "{name}";
+    hover-select: false;
+    scroll-method: 1;
+    me-select-entry: "";
+    me-accept-entry: "MousePrimary";
+    window-format: "{w} · {c} · {t}";
+}
+
+@theme "~/.config/rofi/powertoys-glass.rasi"
